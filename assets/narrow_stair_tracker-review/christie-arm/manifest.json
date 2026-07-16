@@ -1,0 +1,137 @@
+{
+  "model": "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad",
+  "model_sha256": "7799ea184d38ba8f7314fda1028e15b1cc89f89427efb2313fcac3b4ca3e7c69",
+  "openscad": "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+  "size": [
+    800,
+    600
+  ],
+  "projection": "orthographic",
+  "mode": "render",
+  "defines": [
+    "$fn=24",
+    "part=\"christie_arm\""
+  ],
+  "results": [
+    {
+      "view": "top",
+      "image": "top.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,0,0,0,100",
+        "--imgsize=800,600",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "$fn=24",
+        "-D",
+        "part=\"christie_arm\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/christie-arm/top.png",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 15\nGeometry cache size in bytes: 57864\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 420896\nTotal rendering time: 0:00:01.242\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      228\n   Halfedges:     684\n   Edges:         342\n   Halffacets:    232\n   Facets:        116\n   Volumes:         2"
+    },
+    {
+      "view": "left",
+      "image": "left.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,90,0,0,100",
+        "--imgsize=800,600",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "$fn=24",
+        "-D",
+        "part=\"christie_arm\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/christie-arm/left.png",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 15\nGeometry cache size in bytes: 57864\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 420896\nTotal rendering time: 0:00:01.222\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      228\n   Halfedges:     684\n   Edges:         342\n   Halffacets:    232\n   Facets:        116\n   Volumes:         2"
+    },
+    {
+      "view": "bottom",
+      "image": "bottom.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,180,0,0,100",
+        "--imgsize=800,600",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "$fn=24",
+        "-D",
+        "part=\"christie_arm\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/christie-arm/bottom.png",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 15\nGeometry cache size in bytes: 57864\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 420896\nTotal rendering time: 0:00:01.274\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      228\n   Halfedges:     684\n   Edges:         342\n   Halffacets:    232\n   Facets:        116\n   Volumes:         2"
+    },
+    {
+      "view": "right",
+      "image": "right.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,90,0,180,100",
+        "--imgsize=800,600",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "$fn=24",
+        "-D",
+        "part=\"christie_arm\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/christie-arm/right.png",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 15\nGeometry cache size in bytes: 57864\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 420896\nTotal rendering time: 0:00:01.280\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      228\n   Halfedges:     684\n   Edges:         342\n   Halffacets:    232\n   Facets:        116\n   Volumes:         2"
+    },
+    {
+      "view": "isometric",
+      "image": "isometric.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,55,0,25,100",
+        "--imgsize=800,600",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "$fn=24",
+        "-D",
+        "part=\"christie_arm\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/christie-arm/isometric.png",
+        "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 15\nGeometry cache size in bytes: 57864\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 420896\nTotal rendering time: 0:00:01.405\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      228\n   Halfedges:     684\n   Edges:         342\n   Halffacets:    232\n   Facets:        116\n   Volumes:         2"
+    }
+  ]
+}

@@ -22,6 +22,15 @@ stair-climbing drivetrain.
 - The support idler tangent and lower track wheel-side face both sit at
   z = 18.758 mm. Exact tangency produces only a zero-area shared edge; with the
   fixture's 0.01 mm tangent allowance, the volumetric intersection is empty.
+- Every road wheel is carried by a 55 mm horizontal Christie arm with a vertical
+  spring pickup at a 0.60 motion ratio.
+- The three arm pivots are at x = -165, -55, and +55 mm; the spring axes are at
+  x = -132, -22, and +88 mm.
+- Static clearances are 3 mm arm-to-wheel, 1 mm arm-to-hub, 1.5 mm
+  spring-cap-to-rail, 4 mm spring-cap-to-wheel, and 3.242 mm
+  upper-mount-to-top-track.
+- The suspension-clearance intersection fixture is empty after adding the
+  intentional 1 mm arm-to-hub gap.
 - The standalone link is one connected printable solid.
 - Straight and 32.727-degree articulated link-pair collision fixtures are empty.
 - The cog teeth taper from an 8 mm tangential root to a 5 mm tip, giving angled
@@ -34,17 +43,21 @@ stair-climbing drivetrain.
 2. Turn a six-to-eight-link cog wrap by hand in both directions and inspect tooth
    entry, release, and lateral clearance.
 3. Add positive pin retention before running a complete track.
-4. Add suspension or preload adjustment for the three lower support idlers; this
-   revision holds them at rigid nominal contact.
-5. Add an adjustable front idler or another tensioning method; its position is
+4. Select real steel spring rates, preload, dampers/guides, bump stops, and wheel
+   travel from the measured vehicle mass and stair-impact loads. The modeled
+   coils are only geometry envelopes.
+5. Validate the cantilevered arm, pivot, hub, and axle loads; the current model
+   establishes packaging and motion geometry, not structural capacity.
+6. Add an adjustable front idler or another tensioning method; its position is
    currently fixed.
-6. Add lateral guidance or guide horns if the track can walk off the wheels.
-7. Replace the placeholder motor/gearbox interface with a bearing-supported,
+7. Add lateral guidance or guide horns if the track can walk off the wheels.
+8. Replace the placeholder motor/gearbox interface with a bearing-supported,
    reduced drive sized for the selected motor and vehicle mass.
 
 ## Fit-to-purpose judgment
 
-The link and cog geometry is now credible for printing and bench testing. The
-overall chassis remains a layout prototype: stair use should wait until pin
-retention, track tension, lateral guidance, axle support, and the reduction drive
-have been resolved and tested under load.
+The link, cog, and Christie suspension packaging are credible for printing and
+bench-fit testing. The overall chassis remains a layout prototype: stair use
+should wait until spring rate, preload, damping, bump stops, arm and axle load
+capacity, pin retention, track tension, lateral guidance, and the reduction
+drive have been resolved and tested under load.
