@@ -6,7 +6,7 @@
 
   Default target:
     overall width:       ~340 mm
-    overall length:      ~505 mm
+    overall length:      ~526 mm
     track width:          55 mm
     track contact length: 390 mm
     sprocket pitch dia:  ~105 mm
@@ -16,11 +16,13 @@
 
   IMPORTANT:
     This is a mechanical layout / first prototype, not a validated drivetrain.
-    The track hinge geometry, sprocket engagement, axle support and gearbox
-    should be test-printed and load-tested before committing to a full build.
+    The imported track and cog geometry has passed the CAD collision fixtures,
+    but must still be test-printed and load-tested before a full build.
 
   Export parts by changing `part` below.
 */
+
+use <track_links.scad>
 
 $fn = 64;
 
@@ -28,7 +30,7 @@ $fn = 64;
 part = "assembly";
 // assembly, track_link, sprocket, idler, road_wheel,
 // rail_front, rail_rear, crossmember, floor_front, floor_rear,
-// motor_plate, gearbox_plate, dimensions
+// motor_plate, gearbox_plate, drive_collision, idler_collision, dimensions
 
 exploded = 0;          // 0 for normal assembly, 1 for mildly exploded
 show_tracks = true;
@@ -47,11 +49,7 @@ wheelbase = track_pitch * straight_link_count;                 // 390 mm
 sprocket_teeth = 11;
 sprocket_pitch_radius = track_pitch / (2 * sin(180 / sprocket_teeth)); // chord-correct chain pitch radius
 
-track_body_thickness = 8;
-grouser_height = 4;
-hinge_outer_d = 9;
-hinge_pin_d = 3.2;
-track_clearance = 0.35;
+// Printable link and drive-cog dimensions are defined in track_links.scad.
 
 axle_z = 72;
 track_path_radius = sprocket_pitch_radius;
@@ -82,11 +80,8 @@ road_wheel_width = 14;
 road_wheel_z = 57;
 road_wheel_x = [-135, -45, 45, 135];
 
-sprocket_body_radius = sprocket_pitch_radius - 9;
-sprocket_width = 16;
-sprocket_tooth_tangent = 11;
-sprocket_tooth_radial = 13;
-sprocket_tooth_width = 15;
+sprocket_body_radius = sprocket_pitch_radius - 7.5;
+sprocket_width = 14;
 
 motor_d = 42;
 motor_length = 48;
@@ -115,95 +110,68 @@ module bolt_circle_y(bcd=25, hole_d=3.3, count=4, depth=20, angle_offset=45) {
             cyl_y(depth, hole_d/2, true);
 }
 
-// ---------- track link ----------
-module track_link(detailed=true) {
-    body_x = track_pitch - hinge_outer_d - 1.0;
-    outer_knuckle_len = (track_width - 18) / 2;
-    centre_knuckle_len = 18 - 2*track_clearance;
-    barrel_r = hinge_outer_d/2;
+// ---------- track loop ----------
+// An 11-tooth cog and two 13-link straight runs require 37 links per side.
+// Link centres, rather than hinge pins, follow the tooth pitch circle because
+// each cog tooth engages the drive window at the centre of a link.
+function track_link_centres() =
+    let(
+        tooth_angle = 360 / sprocket_teeth,
+        bottom = [
+            for (i = [0 : straight_link_count-1])
+                [-wheelbase/2 + track_pitch/2 + i*track_pitch, track_bottom_z]
+        ],
+        front = [
+            for (i = [0 : ceil(sprocket_teeth/2)-1])
+                [
+                    wheelbase/2 + track_path_radius*cos(-90 + tooth_angle/2 + i*tooth_angle),
+                    axle_z + track_path_radius*sin(-90 + tooth_angle/2 + i*tooth_angle)
+                ]
+        ],
+        top = [
+            for (i = [0 : straight_link_count-1])
+                [wheelbase/2 - track_pitch - i*track_pitch, track_top_z]
+        ],
+        rear = [
+            for (i = [1 : floor(sprocket_teeth/2)])
+                [
+                    -wheelbase/2 + track_path_radius*cos(90 + i*tooth_angle),
+                    axle_z + track_path_radius*sin(90 + i*tooth_angle)
+                ]
+        ]
+    )
+    concat(bottom, front, top, rear);
 
-    difference() {
-        union() {
-            // Main pad body
-            translate([0,0,track_body_thickness/2])
-                cube([body_x, track_width, track_body_thickness], center=true);
+function point_distance(a, b) =
+    sqrt(pow(b[0]-a[0], 2) + pow(b[1]-a[1], 2));
 
-            // Grouser. Narrow enough not to foul the hinge barrels.
-            translate([0,0,track_body_thickness + grouser_height/2])
-                cube([track_pitch*0.58, track_width*0.86, grouser_height], center=true);
+function track_link_spacings() =
+    let(centres = track_link_centres())
+    [
+        for (i = [0 : len(centres)-1])
+            point_distance(centres[i], centres[(i+1) % len(centres)])
+    ];
 
-            if (detailed) {
-                // Front: two outer knuckles
-                for (sy = [-1,1])
-                    translate([track_pitch/2,
-                               sy*(track_width/2 - outer_knuckle_len/2),
-                               barrel_r])
-                        cyl_y(outer_knuckle_len, barrel_r, true);
+module positioned_track_link(index, y=0) {
+    centres = track_link_centres();
+    previous = centres[(index-1+len(centres)) % len(centres)];
+    current = centres[index];
+    next = centres[(index+1) % len(centres)];
+    dx = next[0] - previous[0];
+    dz = next[1] - previous[1];
+    link_angle = atan2(dz, dx);
 
-                // Rear: central knuckle
-                translate([-track_pitch/2, 0, barrel_r])
-                    cyl_y(centre_knuckle_len, barrel_r, true);
-            }
-        }
-
-        if (detailed) {
-            // Hinge pin bores
-            for (x = [-track_pitch/2, track_pitch/2])
-                translate([x,0,barrel_r])
-                    cyl_y(track_width + 2, hinge_pin_d/2, true);
-
-            // Central drive pocket for sprocket tooth
-            translate([0,0,-0.1])
-                cube([sprocket_tooth_tangent + 1.2,
-                      sprocket_tooth_width + 1.2,
-                      track_body_thickness + 0.4], center=true);
-        }
-    }
+    translate([current[0], y, current[1]])
+        rotate([0, -link_angle, 0])
+            rotate([180, 0, 0])
+                track_link();
 }
 
-module simple_track_link() {
-    // Assembly-only envelope centred on the hinge path. The printable link above
-    // carries the actual hinge barrels and outward-facing grouser.
-    cube([track_pitch-1.0,
-          track_width,
-          track_body_thickness + grouser_height], center=true);
-}
-
-// Place simplified links around a capsule path in the X/Z plane.
 module track_loop(y=0) {
-    arc_links = round(PI * track_path_radius / track_pitch);
+    centres = track_link_centres();
 
-    // lower straight
-    for (i = [0 : straight_link_count-1])
-        translate([-wheelbase/2 + track_pitch/2 + i*track_pitch,
-                   y,
-                   track_bottom_z])
-            simple_track_link();
-
-    // upper straight
-    for (i = [0 : straight_link_count-1])
-        translate([wheelbase/2 - track_pitch/2 - i*track_pitch,
-                   y,
-                   track_top_z])
-            rotate([0,180,0]) simple_track_link();
-
-    // front arc, x positive
-    for (i = [0 : arc_links-1]) {
-        a = -90 + (i + 0.5) * 180 / arc_links;
-        translate([wheelbase/2 + track_path_radius*cos(a),
-                   y,
-                   axle_z + track_path_radius*sin(a)])
-            rotate([0,-a-90,0]) simple_track_link();
-    }
-
-    // rear arc, x negative
-    for (i = [0 : arc_links-1]) {
-        a = 90 + (i + 0.5) * 180 / arc_links;
-        translate([-wheelbase/2 + track_path_radius*cos(a),
-                   y,
-                   axle_z + track_path_radius*sin(a)])
-            rotate([0,-a-90,0]) simple_track_link();
-    }
+    for (i = [0 : len(centres)-1])
+        positioned_track_link(i, y);
 }
 
 // ---------- wheels ----------
@@ -213,30 +181,8 @@ module lightening_holes_y(radius=25, hole_r=5, count=6, depth=30) {
             cyl_y(depth, hole_r, true);
 }
 
-module sprocket() {
-    difference() {
-        union() {
-            cyl_y(sprocket_width, sprocket_body_radius, true);
-            cyl_y(sprocket_width + 4, 15, true);
-
-            // Radial drive lugs. These engage the central pockets in track links.
-            for (a=[0:360/sprocket_teeth:359])
-                translate([sprocket_pitch_radius*cos(a),
-                           0,
-                           sprocket_pitch_radius*sin(a)])
-                    rotate([0,-a,0])
-                        cube([sprocket_tooth_radial,
-                              sprocket_tooth_width,
-                              sprocket_tooth_tangent], center=true);
-        }
-
-        cyl_y(sprocket_width + 8, main_axle_d/2, true);
-        lightening_holes_y(sprocket_body_radius*0.58, 6, 6, sprocket_width+5);
-
-        // Hex-like clamp recess around axle; intended for a separate hub insert.
-        rotate([90,0,0])
-            cylinder(h=4.2, r=8.3, center=true, $fn=6);
-    }
+module sprocket(phase=0) {
+    rotate([0, -phase, 0]) cog_reference();
 }
 
 module idler() {
@@ -420,7 +366,8 @@ module frame_assembly() {
 
 module running_gear_side(y=0, mirror_side=false) {
     // rear drive sprocket, front idler
-    translate([-wheelbase/2,y,axle_z]) sprocket();
+    translate([-wheelbase/2,y,axle_z])
+        sprocket();
     translate([ wheelbase/2,y,axle_z]) idler();
 
     for (rx=road_wheel_x)
@@ -449,22 +396,46 @@ module assembly() {
     }
 }
 
+module drive_collision() {
+    intersection() {
+        translate([-wheelbase/2, 0, axle_z])
+            sprocket();
+        union()
+            // Bottom transition, upper transition, and five rear-wrap links.
+            for (index = [0, 31, 32, 33, 34, 35, 36])
+                positioned_track_link(index, 0);
+    }
+}
+
+module idler_collision() {
+    intersection() {
+        translate([wheelbase/2, 0, axle_z])
+            idler();
+        union()
+            // Bottom transition, six front-wrap links, and upper transition.
+            for (index = [12, 13, 14, 15, 16, 17, 18, 19])
+                positioned_track_link(index, 0);
+    }
+}
+
 module dimensions() {
+    spacings = track_link_spacings();
+
     echo("overall_width_mm", overall_width);
     echo("chassis_width_mm", chassis_width);
     echo("track_width_mm", track_width);
     echo("wheelbase_mm", wheelbase);
     echo("approx_overall_length_mm", wheelbase + 2*track_path_radius + track_pitch);
     echo("sprocket_pitch_diameter_mm", 2*sprocket_pitch_radius);
-    echo("approx_track_links_per_side",
-         2*straight_link_count + 2*round(PI*track_path_radius/track_pitch));
+    echo("track_links_per_side", len(track_link_centres()));
+    echo("track_link_spacing_range_mm", [min(spacings), max(spacings)]);
     echo("rail_half_length_mm", rail_length/2 + rail_split_overlap/2);
     echo("floor_half_size_mm", [floor_half_length,chassis_width-6]);
 }
 
 // ---------- output ----------
 if (part == "assembly") assembly();
-else if (part == "track_link") track_link(true);
+else if (part == "track_link") track_link();
 else if (part == "sprocket") sprocket();
 else if (part == "idler") idler();
 else if (part == "road_wheel") road_wheel();
@@ -475,5 +446,7 @@ else if (part == "floor_front") floor_half(true);
 else if (part == "floor_rear") floor_half(false);
 else if (part == "motor_plate") motor_plate();
 else if (part == "gearbox_plate") gearbox_plate();
+else if (part == "drive_collision") drive_collision();
+else if (part == "idler_collision") idler_collision();
 else if (part == "dimensions") dimensions();
 else assert(false, str("Unknown part selector: ", part));

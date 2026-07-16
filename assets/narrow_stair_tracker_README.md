@@ -1,6 +1,8 @@
-# Narrow stair tracker — first-pass OpenSCAD model
+# Narrow stair tracker — OpenSCAD prototype
 
-This is an original, parametric tracked chassis inspired by the general layout of RCTestFlight's Snow Tank. It is **not** a scaled copy of the original STL geometry.
+This is an original, parametric tracked chassis inspired by the general layout
+of RCTestFlight's Snow Tank. It is **not** a scaled copy of the original STL
+geometry.
 
 ## Default dimensions
 
@@ -10,19 +12,50 @@ This is an original, parametric tracked chassis inspired by the general layout o
 - Track contact length / wheelbase: **390 mm**
 - Approximate overall length: **526 mm**
 - Sprocket pitch diameter: approximately **106.5 mm**
-- Track links: approximately **38 per side**
+- Track links: **37 per side**
 
-The 340 mm overall width is almost exactly two-thirds of the roughly 508 mm width previously discussed for the larger Snowcat-style platform.
+The 340 mm overall width is almost exactly two-thirds of the roughly 508 mm
+width previously discussed for the larger Snowcat-style platform.
+
+## Track and cog integration
+
+The chassis imports `track_link()` and `cog_reference()` from
+`track_links.scad`; the standalone link file is the source of truth for their
+printable geometry. The old simplified rectangular assembly links and the old
+straight-sided sprocket teeth have been removed.
+
+The integrated system uses:
+
+- identical 55 mm-wide links joined by 3 mm metal pins
+- 30 mm hinge and cog pitch
+- a central 10 x 16 mm through-window in every link
+- an 11-tooth cog with chord-correct pitch geometry
+- tapered, symmetric tooth faces so the cog can enter and leave the window in
+  either direction
+- 37 actual detailed links on each side of the assembly
+
+The loop is generated from link-centre positions around the pitch circle. The
+reported adjacent-centre spacing is 30.000 to 30.077 mm; the small maximum
+variation occurs at a straight-to-wrap transition.
+
+Two diagnostic selectors were added:
+
+- `drive_collision`: cog against the seven links around the rear drive wrap
+- `idler_collision`: idler against the eight links around the front wrap
+
+Both are expected to render as an empty object. A non-empty result means the
+wheel geometry intersects the links.
 
 ## X1C printability
 
-The default parts are split so their nominal XY footprints fit within a 256 × 256 mm bed:
+The default parts are split so their nominal XY footprints fit within a
+256 x 256 mm bed:
 
-- Rail half: approximately 235 × 86 mm when laid flat
-- Floor half: 230 × 208 mm
-- Crossmember: 214 × 28 mm
+- Rail half: approximately 235 x 86 mm when laid flat
+- Floor half: 230 x 208 mm
+- Crossmember: 214 x 28 mm
 - Sprocket/idler: under 120 mm diameter
-- Track link: 30 × 55 mm
+- Track link: 40 x 55 mm including hinge barrels
 
 Reorient rail, gearbox, and motor plates flat before slicing.
 
@@ -48,6 +81,8 @@ Available values:
 - `floor_rear`
 - `motor_plate`
 - `gearbox_plate`
+- `drive_collision`
+- `idler_collision`
 - `dimensions`
 
 Render with F6, then export the selected part as STL.
@@ -57,10 +92,14 @@ Render with F6, then export the selected part as STL.
 Do these before printing a complete set:
 
 1. Print two track links and test the hinge with the intended 3 mm pin material.
-2. Print one sprocket and six to eight links, then verify pitch and tooth engagement around half the sprocket.
-3. Tune `track_clearance`, `hinge_pin_d`, and `bearing_od` for the actual filament and printer profile.
-4. Build one complete track pod and turn it by hand under load before installing motors.
-5. Add a real axle retention method and metal bearing spacers. The model only provides nominal bores.
+2. Print one sprocket and six to eight links, then verify pitch and tooth
+   engagement around half the sprocket in both directions.
+3. Tune the link clearances in `track_links.scad` and `bearing_od` in the chassis
+   model for the actual filament and printer profile.
+4. Build one complete track pod and turn it by hand under load before installing
+   motors.
+5. Add a real axle and pin-retention method plus metal bearing spacers. The model
+   only provides nominal bores.
 
 ## Materials
 
@@ -76,6 +115,23 @@ A sensible first build would use:
 
 ## Drivetrain status
 
-The model includes a generic 42 mm brushless motor plate and gearbox side plate, but **does not contain a validated reduction gearbox**. A low-KV outrunner still needs substantial reduction for controlled stair climbing. Treat the motor and gearbox geometry as an interface placeholder, not a finished transmission.
+The model includes a generic 42 mm brushless motor plate and gearbox side plate,
+but **does not contain a validated reduction gearbox**. A low-KV outrunner still
+needs substantial reduction for controlled stair climbing. Treat the motor and
+gearbox geometry as an interface placeholder, not a finished transmission.
 
-For the next iteration, choose the actual motor, battery voltage, desired track speed, and reduction method first. Those determine shaft spacing, gearbox size, and whether the rear sprocket axle can remain where it is.
+For the next iteration, choose the actual motor, battery voltage, desired track
+speed, and reduction method first. Those determine shaft spacing, gearbox size,
+and whether the rear sprocket axle can remain where it is.
+
+## Changes in this revision
+
+- Replaced the disconnected original link geometry with the printable pinned
+  link from `track_links.scad`.
+- Replaced the chassis sprocket with the matching tapered-tooth reference cog.
+- Rebuilt the displayed loop using the real detailed link geometry.
+- Corrected the loop to 37 links per side and aligned its wrap to the 11-tooth
+  pitch circle.
+- Added pitch-spacing output and separate drive-cog and idler collision fixtures.
+- Updated the assembly dimensions and prototype instructions to match the new
+  track system.
