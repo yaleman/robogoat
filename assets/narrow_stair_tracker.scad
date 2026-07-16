@@ -28,9 +28,10 @@ $fn = 64;
 
 // ---------- part selector ----------
 part = "assembly";
-// assembly, track_link, sprocket, idler, road_wheel,
+// assembly, track_link, sprocket, idler, support_idler,
 // rail_front, rail_rear, crossmember, floor_front, floor_rear,
-// motor_plate, gearbox_plate, drive_collision, idler_collision, dimensions
+// motor_plate, gearbox_plate, drive_collision, idler_collision,
+// support_idler_collision, dimensions
 
 exploded = 0;          // 0 for normal assembly, 1 for mildly exploded
 show_tracks = true;
@@ -73,12 +74,12 @@ crossmember_wall = 3;
 main_axle_d = 8.2;
 bearing_od = 22.2;    // 608 bearing slip-fit starting point; tune for material
 bearing_depth = 7.2;
-road_axle_d = 5.2;
-
-road_wheel_radius = 35;
-road_wheel_width = 14;
-road_wheel_z = 57;
-road_wheel_x = [-135, -45, 45, 135];
+support_idler_axle_d = 5.2;
+support_idler_radius = 35;
+support_idler_width = 14;
+support_idler_x = [-110, 0, 110];
+// Nominal tangent contact with the wheel-side face of the lower track run.
+support_idler_z = track_bottom_z + support_idler_radius;
 
 sprocket_body_radius = sprocket_pitch_radius - 7.5;
 sprocket_width = 14;
@@ -196,14 +197,19 @@ module idler() {
     }
 }
 
-module road_wheel() {
+module support_idler() {
     difference() {
         union() {
-            cyl_y(road_wheel_width, road_wheel_radius, true);
-            cyl_y(road_wheel_width + 4, 10, true);
+            cyl_y(support_idler_width, support_idler_radius, true);
+            cyl_y(support_idler_width + 4, 10, true);
         }
-        cyl_y(road_wheel_width + 8, road_axle_d/2, true);
-        lightening_holes_y(road_wheel_radius*0.56, 4.5, 6, road_wheel_width+5);
+        cyl_y(support_idler_width + 8, support_idler_axle_d/2, true);
+        lightening_holes_y(
+            support_idler_radius*0.56,
+            4.5,
+            6,
+            support_idler_width+5
+        );
     }
 }
 
@@ -232,12 +238,17 @@ module rail_half(front=true) {
         translate([end_x,0,axle_z])
             cyl_y(rail_thickness+2, bearing_od/2, true);
 
-        // Four road-wheel axle bores that fall within this half.
-        for (rx = road_wheel_x)
-            if ((front && rx >= -rail_split_overlap/2) ||
-                (!front && rx <= rail_split_overlap/2))
-                translate([rx,0,road_wheel_z])
-                    cyl_y(rail_thickness+2, road_axle_d/2, true);
+        // Three lower-run support-idler axle bores. The centre bore passes
+        // through both overlapping rail halves at the frame splice.
+        for (idler_x = support_idler_x)
+            if ((front && idler_x >= -rail_split_overlap/2) ||
+                (!front && idler_x <= rail_split_overlap/2))
+                translate([idler_x,0,support_idler_z])
+                    cyl_y(
+                        rail_thickness+2,
+                        support_idler_axle_d/2,
+                        true
+                    );
 
         // Crossmember bolt holes
         for (cx = [-150, 0, 150])
@@ -370,8 +381,11 @@ module running_gear_side(y=0, mirror_side=false) {
         sprocket();
     translate([ wheelbase/2,y,axle_z]) idler();
 
-    for (rx=road_wheel_x)
-        translate([rx,y,road_wheel_z]) road_wheel();
+    // All three support idlers share the track centreline and bear against the
+    // wheel-side face of the lower run. Suspension/preload is intentionally
+    // deferred to a later revision.
+    for (idler_x = support_idler_x)
+        translate([idler_x, y, support_idler_z]) support_idler();
 
     if (show_tracks)
         track_loop(y);
@@ -418,6 +432,26 @@ module idler_collision() {
     }
 }
 
+module support_idler_collision() {
+    tangent_allowance = 0.01;
+
+    intersection() {
+        union()
+            for (idler_x = support_idler_x)
+                // Ignore the zero-area edge created by exact mathematical
+                // tangency so this fixture reports volumetric penetration.
+                translate([
+                    idler_x,
+                    0,
+                    support_idler_z + tangent_allowance
+                ]) support_idler();
+        union()
+            // All 13 links in the straight lower run.
+            for (index = [0 : straight_link_count-1])
+                positioned_track_link(index, 0);
+    }
+}
+
 module dimensions() {
     spacings = track_link_spacings();
 
@@ -429,6 +463,10 @@ module dimensions() {
     echo("sprocket_pitch_diameter_mm", 2*sprocket_pitch_radius);
     echo("track_links_per_side", len(track_link_centres()));
     echo("track_link_spacing_range_mm", [min(spacings), max(spacings)]);
+    echo("support_idlers_per_side", len(support_idler_x));
+    echo("support_idler_x_mm", support_idler_x);
+    echo("support_idler_axle_z_mm", support_idler_z);
+    echo("support_idler_nominal_contact_z_mm", support_idler_z-support_idler_radius);
     echo("rail_half_length_mm", rail_length/2 + rail_split_overlap/2);
     echo("floor_half_size_mm", [floor_half_length,chassis_width-6]);
 }
@@ -438,7 +476,7 @@ if (part == "assembly") assembly();
 else if (part == "track_link") track_link();
 else if (part == "sprocket") sprocket();
 else if (part == "idler") idler();
-else if (part == "road_wheel") road_wheel();
+else if (part == "support_idler") support_idler();
 else if (part == "rail_front") rail_half(true);
 else if (part == "rail_rear") rail_half(false);
 else if (part == "crossmember") crossmember();
@@ -448,5 +486,6 @@ else if (part == "motor_plate") motor_plate();
 else if (part == "gearbox_plate") gearbox_plate();
 else if (part == "drive_collision") drive_collision();
 else if (part == "idler_collision") idler_collision();
+else if (part == "support_idler_collision") support_idler_collision();
 else if (part == "dimensions") dimensions();
 else assert(false, str("Unknown part selector: ", part));

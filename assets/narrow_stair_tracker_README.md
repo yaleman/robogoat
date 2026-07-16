@@ -34,17 +34,31 @@ The integrated system uses:
   either direction
 - 37 actual detailed links on each side of the assembly
 
+## Lower-run support idlers
+
+Each track now has three 70 mm-diameter support idlers at longitudinal positions
+-110, 0, and +110 mm. Every idler is centred across the 55 mm track width. Their
+axles sit at z = 53.758 mm, placing the wheel tangent at z = 18.758 mm against
+the wheel-side face of the straight lower track run.
+
+This is a rigid nominal-contact layout. No spring travel or geometric preload is
+included yet; those belong in the later suspension design. The centre axle bore
+passes through both rail halves at their overlapping frame splice.
+
 The loop is generated from link-centre positions around the pitch circle. The
 reported adjacent-centre spacing is 30.000 to 30.077 mm; the small maximum
 variation occurs at a straight-to-wrap transition.
 
-Two diagnostic selectors were added:
+Three diagnostic selectors are available:
 
 - `drive_collision`: cog against the seven links around the rear drive wrap
 - `idler_collision`: idler against the eight links around the front wrap
+- `support_idler_collision`: three lower support idlers against the 13 links in
+  the straight lower run, with a 0.01 mm allowance that excludes the shared
+  tangent edge and reports only volumetric penetration
 
-Both are expected to render as an empty object. A non-empty result means the
-wheel geometry intersects the links.
+All three are expected to render as an empty object. A non-empty result means
+the wheel geometry intersects the links beyond the documented tangent allowance.
 
 ## X1C printability
 
@@ -73,7 +87,7 @@ Available values:
 - `track_link`
 - `sprocket`
 - `idler`
-- `road_wheel`
+- `support_idler`
 - `rail_front`
 - `rail_rear`
 - `crossmember`
@@ -83,6 +97,7 @@ Available values:
 - `gearbox_plate`
 - `drive_collision`
 - `idler_collision`
+- `support_idler_collision`
 - `dimensions`
 
 Render with F6, then export the selected part as STL.
@@ -106,7 +121,7 @@ Do these before printing a complete set:
 A sensible first build would use:
 
 - Track links: PA6-CF, PAHT-CF, or tough PETG/ASA for cheap iteration
-- Sprocket and idler: PA-CF or PC; avoid ordinary PLA for loaded final parts
+- Sprocket and idlers: PA-CF or PC; avoid ordinary PLA for loaded final parts
 - Frame rails and floor: ASA, PC, or PA-CF
 - Optional traction pads: separate TPU inserts or bonded TPU strips
 - Hinge pins: 3 mm stainless rod or cut-down machine screws
@@ -133,5 +148,7 @@ and whether the rear sprocket axle can remain where it is.
 - Corrected the loop to 37 links per side and aligned its wrap to the 11-tooth
   pitch circle.
 - Added pitch-spacing output and separate drive-cog and idler collision fixtures.
+- Replaced the four road wheels with three track-centred lower-run support idlers
+  per side and moved their axle height to nominal track contact.
 - Updated the assembly dimensions and prototype instructions to match the new
   track system.

@@ -17,6 +17,11 @@ stair-climbing drivetrain.
 - Every adjacent link centre is 30.000 to 30.077 mm apart.
 - The rear cog/link intersection fixture is empty.
 - The front idler/link intersection fixture is empty.
+- Three support idlers per side are centred on their tracks at x = -110, 0, and
+  +110 mm.
+- The support idler tangent and lower track wheel-side face both sit at
+  z = 18.758 mm. Exact tangency produces only a zero-area shared edge; with the
+  fixture's 0.01 mm tangent allowance, the volumetric intersection is empty.
 - The standalone link is one connected printable solid.
 - Straight and 32.727-degree articulated link-pair collision fixtures are empty.
 - The cog teeth taper from an 8 mm tangential root to a 5 mm tip, giving angled
@@ -29,10 +34,12 @@ stair-climbing drivetrain.
 2. Turn a six-to-eight-link cog wrap by hand in both directions and inspect tooth
    entry, release, and lateral clearance.
 3. Add positive pin retention before running a complete track.
-4. Add an adjustable idler or another tensioning method; the current front idler
-   position is fixed.
-5. Add lateral guidance or guide horns if the track can walk off the wheels.
-6. Replace the placeholder motor/gearbox interface with a bearing-supported,
+4. Add suspension or preload adjustment for the three lower support idlers; this
+   revision holds them at rigid nominal contact.
+5. Add an adjustable front idler or another tensioning method; its position is
+   currently fixed.
+6. Add lateral guidance or guide horns if the track can walk off the wheels.
+7. Replace the placeholder motor/gearbox interface with a bearing-supported,
    reduced drive sized for the selected motor and vehicle mass.
 
 ## Fit-to-purpose judgment
