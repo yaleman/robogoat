@@ -2,9 +2,9 @@
 
 ## Project Structure & Module Organization
 
-This repository contains parametric OpenSCAD designs for a tracked robot. Keep editable CAD sources in `assets/`; `assets/track_links.scad` defines the reusable track link and cog geometry, while `assets/narrow_stair_tracker.scad` assembles the chassis. Place design-specific notes beside the model in files such as `assets/narrow_stair_tracker_README.md`.
+Keep editable OpenSCAD sources in `assets/`; `assets/track_links.scad` defines reusable track and cog geometry, while `assets/narrow_stair_tracker.scad` assembles the chassis. Place design notes beside each model.
 
-Generated STL files and visual-review output also live under `assets/`. Review directories use the `<model>-review/` pattern and contain five rendered views, an `index.html`, and a `manifest.json`. The reusable rendering workflow is maintained in `plugins/openscad-review/`.
+Generated STL and visual-review output also live under `assets/`. `<model>-review/` directories contain five views, `index.html`, and `manifest.json`. Rendering tools live in `plugins/openscad-review/`.
 
 ## Build, Test, and Development Commands
 
@@ -13,11 +13,15 @@ Generated STL files and visual-review output also live under `assets/`. Review d
 - Run the same review command without `--preview` before submitting changes; this produces final top, bottom, left, right, and isometric views.
 - Add `-D 'part="track_link"'` to render a selector from a multi-part model.
 
-OpenSCAD must be installed locally. The Python metadata targets Python 3.12 or newer; use `uv` for any future Python dependency changes.
+OpenSCAD is required. Python targets 3.12 or newer; manage dependencies with `uv`.
 
 ## Coding Style & Naming Conventions
 
-Use four-space indentation in Python and conventional OpenSCAD formatting with one statement per line. Name OpenSCAD modules and variables in `snake_case`, and give selector values descriptive lowercase names such as `spring_clevis`. Keep dimensions parameterized near the top of each model; avoid unexplained constants in geometry expressions. Add short comments for mechanical intent, clearances, and coordinate-system assumptions.
+Use four-space Python indentation and one OpenSCAD statement per line. Name modules and variables in `snake_case`, with descriptive lowercase selectors such as `spring_clevis`. Parameterize dimensions near the model's top; avoid unexplained geometry constants. Comment mechanical intent, clearances, and coordinate assumptions.
+
+## Dimension Change Approval
+
+Do not change track pitch, track width, link geometry, sprocket or idler dimensions, the chassis envelope, suspension geometry, mounting interfaces, or other major component dimensions without the human's explicit agreement to that specific change. Do not infer approval from a broader task. Before requesting agreement, describe the proposed dimensions and which existing parts may need to be reprinted or replaced. Refactoring, documentation, rendering, and geometry fixes may proceed without separate approval only when they preserve established dimensions, interfaces, and compatibility with already printed parts.
 
 ## Testing Guidelines
 
