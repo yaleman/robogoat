@@ -1,0 +1,20 @@
+{
+  "name": "openscad-review",
+  "version": "0.1.0",
+  "description": "Render OpenSCAD models from five standard viewpoints for visual review.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "OpenSCAD Review",
+    "shortDescription": "Render standard views for model inspection.",
+    "longDescription": "Renders top, bottom, left, right, and isometric views of an OpenSCAD model and guides a visual geometry review.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": ["Render", "Review"],
+    "defaultPrompt": [
+      "Render and visually review this OpenSCAD model."
+    ]
+  }
+}

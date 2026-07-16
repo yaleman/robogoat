@@ -1,0 +1,126 @@
+{
+  "model": "/Users/yaleman/Projects/robogoat/assets/track_links.scad",
+  "model_sha256": "e41a548e6f610aeb78f144bce2a48b834685b0505f5ca15dbaf8c90f16ee3acd",
+  "openscad": "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+  "size": [
+    1000,
+    750
+  ],
+  "projection": "orthographic",
+  "mode": "render",
+  "defines": [
+    "part=\"link\""
+  ],
+  "results": [
+    {
+      "view": "top",
+      "image": "top.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,0,0,0,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"link\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/link/top.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 23\nGeometry cache size in bytes: 124456\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 1838464\nTotal rendering time: 0:00:03.592\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      790\n   Halfedges:    2374\n   Edges:        1187\n   Halffacets:    796\n   Facets:        398\n   Volumes:         2"
+    },
+    {
+      "view": "left",
+      "image": "left.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,90,0,0,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"link\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/link/left.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 23\nGeometry cache size in bytes: 124456\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 1838464\nTotal rendering time: 0:00:03.595\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      790\n   Halfedges:    2374\n   Edges:        1187\n   Halffacets:    796\n   Facets:        398\n   Volumes:         2"
+    },
+    {
+      "view": "bottom",
+      "image": "bottom.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,180,0,0,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"link\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/link/bottom.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 23\nGeometry cache size in bytes: 124456\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 1838464\nTotal rendering time: 0:00:03.612\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      790\n   Halfedges:    2374\n   Edges:        1187\n   Halffacets:    796\n   Facets:        398\n   Volumes:         2"
+    },
+    {
+      "view": "right",
+      "image": "right.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,90,0,180,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"link\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/link/right.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 23\nGeometry cache size in bytes: 124456\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 1838464\nTotal rendering time: 0:00:03.554\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      790\n   Halfedges:    2374\n   Edges:        1187\n   Halffacets:    796\n   Facets:        398\n   Volumes:         2"
+    },
+    {
+      "view": "isometric",
+      "image": "isometric.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,55,0,25,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"link\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/link/isometric.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 23\nGeometry cache size in bytes: 124456\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 1838464\nTotal rendering time: 0:00:03.544\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      790\n   Halfedges:    2374\n   Edges:        1187\n   Halffacets:    796\n   Facets:        398\n   Volumes:         2"
+    }
+  ]
+}

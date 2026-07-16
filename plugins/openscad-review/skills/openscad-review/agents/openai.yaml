@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenSCAD Review"
+  short_description: "Render standard views for model inspection"
+  default_prompt: "Use $openscad-review to render and inspect this OpenSCAD model."

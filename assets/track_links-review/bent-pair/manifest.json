@@ -1,0 +1,126 @@
+{
+  "model": "/Users/yaleman/Projects/robogoat/assets/track_links.scad",
+  "model_sha256": "e41a548e6f610aeb78f144bce2a48b834685b0505f5ca15dbaf8c90f16ee3acd",
+  "openscad": "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+  "size": [
+    1000,
+    750
+  ],
+  "projection": "orthographic",
+  "mode": "render",
+  "defines": [
+    "part=\"bent_pair\""
+  ],
+  "results": [
+    {
+      "view": "top",
+      "image": "top.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,0,0,0,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"bent_pair\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/bent-pair/top.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 27\nGeometry cache size in bytes: 166536\nCGAL Polyhedrons in cache: 11\nCGAL cache size in bytes: 10546320\nTotal rendering time: 0:00:07.348\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:     1724\n   Halfedges:    5180\n   Edges:        2590\n   Halffacets:   1740\n   Facets:        870\n   Volumes:         4"
+    },
+    {
+      "view": "left",
+      "image": "left.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,90,0,0,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"bent_pair\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/bent-pair/left.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 27\nGeometry cache size in bytes: 166536\nCGAL Polyhedrons in cache: 11\nCGAL cache size in bytes: 10546320\nTotal rendering time: 0:00:07.382\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:     1724\n   Halfedges:    5180\n   Edges:        2590\n   Halffacets:   1740\n   Facets:        870\n   Volumes:         4"
+    },
+    {
+      "view": "bottom",
+      "image": "bottom.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,180,0,0,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"bent_pair\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/bent-pair/bottom.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 27\nGeometry cache size in bytes: 166536\nCGAL Polyhedrons in cache: 11\nCGAL cache size in bytes: 10546320\nTotal rendering time: 0:00:07.725\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:     1724\n   Halfedges:    5180\n   Edges:        2590\n   Halffacets:   1740\n   Facets:        870\n   Volumes:         4"
+    },
+    {
+      "view": "right",
+      "image": "right.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,90,0,180,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"bent_pair\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/bent-pair/right.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 27\nGeometry cache size in bytes: 166536\nCGAL Polyhedrons in cache: 11\nCGAL cache size in bytes: 10546320\nTotal rendering time: 0:00:08.044\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:     1724\n   Halfedges:    5180\n   Edges:        2590\n   Halffacets:   1740\n   Facets:        870\n   Volumes:         4"
+    },
+    {
+      "view": "isometric",
+      "image": "isometric.png",
+      "command": [
+        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,55,0,25,100",
+        "--imgsize=1000,750",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-D",
+        "part=\"bent_pair\"",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/track_links-review/bent-pair/isometric.png",
+        "/Users/yaleman/Projects/robogoat/assets/track_links.scad"
+      ],
+      "return_code": 0,
+      "output": "Geometries in cache: 27\nGeometry cache size in bytes: 166536\nCGAL Polyhedrons in cache: 11\nCGAL cache size in bytes: 10546320\nTotal rendering time: 0:00:07.703\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:     1724\n   Halfedges:    5180\n   Edges:        2590\n   Halffacets:   1740\n   Facets:        870\n   Volumes:         4"
+    }
+  ]
+}
