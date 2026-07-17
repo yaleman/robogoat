@@ -47,19 +47,27 @@ Each road wheel is carried by an independent Christie-style suspension unit:
 - 6.2 mm hull-pivot bore in the rail's lower structural web
 - wheel axle at the arm tip
 - vertical spring pickup 60% of the way from pivot to wheel axle
-- cross-pin and lower clevis connecting the offset pickup to the spring seat
-- 56.242 mm nominal vertical spring envelope
-- upper spring bracket cross-bolted through the rail's upper structural web
+- integral lower spring eyelet pinned beside the arm pickup
+- integral upper spring eyelet captured by a double-shear fork
+- 4 mm removable pivot pins in 4.4 mm eyelet and fork bores
+- 56.242 mm nominal eyelet-centre spacing
+- fork bracket cross-bolted through the rail's upper structural web
 
 When a wheel rises, its arm rotates upward about the hull pivot. The intermediate
 pickup rises by 60% of the wheel's small-angle travel and compresses the vertical
-spring. The neutral model keeps the three wheels tangent to the straight lower
-track run.
+spring. Both spring ends pivot about transverse pins, allowing the spring/damper
+body to tilt as the arm pickup follows its arc. The neutral model keeps the three
+wheels tangent to the straight lower track run.
+
+The `suspension_unit_raised` selector demonstrates 12 degrees of upward arm
+rotation: 11.435 mm wheel lift, 6.856 mm spring compression, and 0.837 degrees of
+spring tilt. The spring remains connected between the moving lower eyelet and
+fixed upper eyelet throughout that state.
 
 The arms sit immediately inboard of the wheels. The springs sit between the arms
 and hull rails. Nominal static clearances are 3 mm arm-to-wheel, 1 mm
-arm-to-hub, 1.5 mm spring-cap-to-rail, 4 mm spring-cap-to-wheel, and 3.242 mm
-between the upper mount and top track.
+arm-to-hub, 0.5 mm lower-eyelet-to-arm, 1.5 mm spring-cap-to-rail, 7 mm
+spring-cap-to-wheel, and 2.242 mm between the upper mount and top track.
 
 The coil and central guide in the model are an **envelope and motion reference**,
 not a printable load-bearing spring. Use a real steel compression spring with a
@@ -70,7 +78,7 @@ The loop is generated from link-centre positions around the pitch circle. The
 reported adjacent-centre spacing is 30.000 to 30.077 mm; the small maximum
 variation occurs at a straight-to-wrap transition.
 
-Four diagnostic selectors are available:
+Five diagnostic selectors are available:
 
 - `drive_collision`: cog against the seven links around the rear drive wrap
 - `idler_collision`: idler against the eight links around the front wrap
@@ -79,8 +87,10 @@ Four diagnostic selectors are available:
   tangent edge and reports only volumetric penetration
 - `suspension_clearance_collision`: the arms and springs against the tracks,
   road wheels, end wheels, and hull rail
+- `spring_pivot_clearance_collision`: spring eyelets and body against the arm
+  and upper fork, excluding their intended pins
 
-All four are expected to render as an empty object. A non-empty result means
+All five are expected to render as an empty object. A non-empty result means
 that one of the checked components has solid interference beyond the documented
 tangent allowance.
 
@@ -113,9 +123,10 @@ Available values:
 - `idler`
 - `support_idler`
 - `christie_arm`
-- `spring_clevis`
 - `vertical_spring`
+- `spring_upper_fork`
 - `suspension_unit`
+- `suspension_unit_raised`
 - `rail_front`
 - `rail_rear`
 - `crossmember`
@@ -127,6 +138,7 @@ Available values:
 - `idler_collision`
 - `support_idler_collision`
 - `suspension_clearance_collision`
+- `spring_pivot_clearance_collision`
 - `dimensions`
 
 Render with F6, then export the selected part as STL.
@@ -147,7 +159,9 @@ Do these before printing a complete set:
 6. Print one arm and mock the spring envelope before producing all six units;
    verify the hub, rail, upper-track, and fastener clearances on the assembled
    track pod.
-7. Weigh the completed robot and calculate the spring rate, preload, damping,
+7. Test one lower and upper pivot with the intended 4 mm pins, washers/bushings,
+   and retainers. Confirm free rotation without visible eyelet or fork slop.
+8. Weigh the completed robot and calculate the spring rate, preload, damping,
    bump stop, and maximum arm angle before powered stair testing.
 
 ## Materials
@@ -188,6 +202,10 @@ and whether the rear sprocket axle can remain where it is.
   per side and moved their axle height to nominal track contact.
 - Mounted each road wheel on a horizontal Christie arm with an inboard vertical
   spring, guide, upper rail bracket, pivot shaft, wheel axle, and spring cross-pin.
+- Replaced the fixed spring seats with integral eyelets at both ends, a lower
+  arm cross-pin, and an upper double-shear fork and pin.
+- Added a raised-wheel kinematic selector that rotates the arm and automatically
+  compresses and tilts the spring between its two pivot centres.
 - Replaced the former wheel-axle rail holes with lower arm-pivot bores and added
   upper spring-mount cross-bolt holes.
 - Updated the assembly dimensions and prototype instructions to match the new

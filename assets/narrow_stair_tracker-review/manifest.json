@@ -1,6 +1,6 @@
 {
   "model": "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad",
-  "model_sha256": "7799ea184d38ba8f7314fda1028e15b1cc89f89427efb2313fcac3b4ca3e7c69",
+  "model_sha256": "fdf88cf6bfce096fe80596e7f187af711e1880edebb667847d8483ab1a92135a",
   "openscad": "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
   "size": [
     1000,
@@ -32,7 +32,7 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 238\nGeometry cache size in bytes: 639128\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 96016176\nTotal rendering time: 0:03:09.729\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    23944\n   Halfedges:   87212\n   Edges:       43606\n   Halffacets:  39724\n   Facets:      19862\n   Volumes:       125\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:14.094\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
     },
     {
       "view": "left",
@@ -54,7 +54,7 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 238\nGeometry cache size in bytes: 639128\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 96016176\nTotal rendering time: 0:03:06.911\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    23944\n   Halfedges:   87212\n   Edges:       43606\n   Halffacets:  39724\n   Facets:      19862\n   Volumes:       125\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:12.543\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
     },
     {
       "view": "bottom",
@@ -76,7 +76,7 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 238\nGeometry cache size in bytes: 639128\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 96016176\nTotal rendering time: 0:03:08.700\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    23944\n   Halfedges:   87212\n   Edges:       43606\n   Halffacets:  39724\n   Facets:      19862\n   Volumes:       125\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:11.025\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
     },
     {
       "view": "right",
@@ -98,7 +98,7 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 238\nGeometry cache size in bytes: 639128\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 96016176\nTotal rendering time: 0:03:08.852\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    23944\n   Halfedges:   87212\n   Edges:       43606\n   Halffacets:  39724\n   Facets:      19862\n   Volumes:       125\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:12.217\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
     },
     {
       "view": "isometric",
@@ -120,7 +120,7 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 238\nGeometry cache size in bytes: 639128\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 96016176\nTotal rendering time: 0:03:08.869\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    23944\n   Halfedges:   87212\n   Edges:       43606\n   Halffacets:  39724\n   Facets:      19862\n   Volumes:       125\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:15.089\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
     }
   ]
 }

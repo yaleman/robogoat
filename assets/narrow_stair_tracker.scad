@@ -24,15 +24,17 @@
 
 use <track_links.scad>
 
-$fn = 64;
+$fn = 45;
 
 // ---------- part selector ----------
 part = "assembly";
 // assembly, track_link, sprocket, idler, support_idler,
-// christie_arm, spring_clevis, vertical_spring, suspension_unit,
+// christie_arm, vertical_spring, spring_upper_fork,
+// suspension_unit, suspension_unit_raised,
 // rail_front, rail_rear, crossmember, floor_front, floor_rear,
 // motor_plate, gearbox_plate, drive_collision, idler_collision,
-// support_idler_collision, suspension_clearance_collision, dimensions
+// support_idler_collision, suspension_clearance_collision,
+// spring_pivot_clearance_collision, dimensions
 
 exploded = 0;          // 0 for normal assembly, 1 for mildly exploded
 show_tracks = true;
@@ -103,23 +105,37 @@ suspension_spring_x = [
 
 suspension_arm_inboard_offset =
     support_idler_width/2 + suspension_arm_width/2 + 3;
-suspension_spring_inboard_offset = 6;
+suspension_spring_inboard_offset = 7.5;
 
 spring_mean_radius = 6;
 spring_wire_d = 2.4;
 spring_turns = 7;
-spring_cap_radius = 9;
+spring_cap_radius = 7.5;
 spring_cap_thickness = 3;
 spring_guide_d = 4;
-spring_bottom_z = support_idler_z + suspension_arm_height/2;
-spring_top_z = 116;
-spring_height = spring_top_z - spring_bottom_z;
+spring_eyelet_outer_radius = 6;
+spring_eyelet_width = 6;
+spring_eyelet_neck_height = 8;
+spring_pivot_pin_d = 4;
+spring_pivot_bore_d = 4.4;
+spring_lower_pivot_z = support_idler_z;
+spring_upper_pivot_z = 110;
+spring_height = spring_upper_pivot_z - spring_lower_pivot_z;
 spring_mount_width = 18;
-spring_mount_thickness = 6;
-spring_clevis_width = 6;
-spring_clevis_radius = 5;
+spring_mount_thickness = 5;
+spring_fork_outer_radius = 7;
+spring_fork_ear_thickness = 3;
+spring_fork_clearance = 0.5;
+spring_fork_pin_overhang = 1;
+spring_mount_bottom_z =
+    spring_upper_pivot_z + spring_fork_outer_radius + 1;
+spring_mount_z = spring_mount_bottom_z + spring_mount_thickness/2;
 
 assert(spring_height > 30, "Vertical spring is too short");
+assert(
+    spring_pivot_bore_d > spring_pivot_pin_d,
+    "Spring pivot bore must clear the pivot pin"
+);
 assert(
     suspension_pickup_ratio > 0 && suspension_pickup_ratio < 1,
     "Spring pickup must lie between the suspension pivot and wheel axle"
@@ -319,91 +335,157 @@ module coil_spring(height) {
             circle(d=spring_wire_d, $fn=12);
 }
 
-module spring_lower_clevis() {
-    clevis_height = suspension_arm_height/2;
+module spring_eyelet(connect_up=true) {
+    neck_height = spring_eyelet_neck_height;
+    neck_z = connect_up ? neck_height/2 : -neck_height/2;
 
     difference() {
         union() {
             cyl_y(
-                spring_clevis_width,
-                spring_clevis_radius,
+                spring_eyelet_width,
+                spring_eyelet_outer_radius,
                 true
             );
-            translate([0, 0, clevis_height/2])
+            translate([0, 0, neck_z])
                 cube([
-                    2*spring_clevis_radius,
-                    spring_clevis_width,
-                    clevis_height
+                    2*spring_eyelet_outer_radius,
+                    spring_eyelet_width,
+                    neck_height
                 ], center=true);
         }
         cyl_y(
-            spring_clevis_width+2,
-            suspension_pickup_d/2,
+            spring_eyelet_width+2,
+            spring_pivot_bore_d/2,
             true
         );
     }
 }
 
 module vertical_spring(height=spring_height) {
-    coil_height = height - 2*spring_cap_thickness;
+    body_overlap = 1;
+    body_start = spring_eyelet_neck_height-body_overlap;
+    body_end = height-spring_eyelet_neck_height+body_overlap;
+    lower_cap_z = body_start;
+    upper_cap_z = body_end-spring_cap_thickness;
+    coil_start = lower_cap_z+spring_cap_thickness;
+    coil_height = upper_cap_z-coil_start;
 
-    assert(coil_height > 0, "Spring caps exceed the spring height");
+    assert(coil_height > 0, "Spring eyelets and caps exceed spring height");
 
-    // Central guide represents the future damper/guide rod.
-    cylinder(h=height, d=spring_guide_d, center=false);
-    cylinder(
-        h=spring_cap_thickness,
-        r=spring_cap_radius,
-        center=false
-    );
-    translate([0, 0, height-spring_cap_thickness])
+    spring_eyelet(true);
+    translate([0, 0, height])
+        spring_eyelet(false);
+
+    // Central guide represents the future telescoping damper/guide envelope.
+    translate([0, 0, body_start])
+        cylinder(
+            h=body_end-body_start,
+            d=spring_guide_d,
+            center=false
+        );
+    translate([0, 0, lower_cap_z])
         cylinder(
             h=spring_cap_thickness,
             r=spring_cap_radius,
             center=false
         );
-    translate([0, 0, spring_cap_thickness])
+    translate([0, 0, upper_cap_z])
+        cylinder(
+            h=spring_cap_thickness,
+            r=spring_cap_radius,
+            center=false
+        );
+    translate([0, 0, coil_start])
         coil_spring(coil_height);
 }
 
-module spring_upper_mount(spring_x, spring_y, side_sign) {
+module spring_upper_fork(spring_x, spring_y, side_sign) {
     rail_y = side_sign*chassis_width/2;
-    mount_span = abs(spring_y-rail_y) + spring_cap_radius;
+    ear_offset =
+        spring_eyelet_width/2
+        + spring_fork_clearance
+        + spring_fork_ear_thickness/2;
+    mount_span =
+        abs(spring_y-rail_y)
+        + 2*ear_offset
+        + spring_fork_ear_thickness;
     mount_y = (spring_y+rail_y)/2;
-    mount_z = spring_top_z + spring_mount_thickness/2;
+    ear_stem_height = spring_mount_bottom_z-spring_upper_pivot_z;
 
     difference() {
-        translate([spring_x, mount_y, mount_z])
+        translate([spring_x, mount_y, spring_mount_z])
             cube([
                 spring_mount_width,
                 mount_span,
                 spring_mount_thickness
             ], center=true);
 
-        // Vertical guide-rod clearance above the spring.
-        translate([spring_x, spring_y, mount_z])
-            cylinder(
-                h=spring_mount_thickness+2,
-                d=spring_guide_d+0.6,
-                center=true
-            );
-
         // M4 cross-bolt into the rail's upper web.
-        translate([spring_x, rail_y, mount_z])
+        translate([spring_x, rail_y, spring_mount_z])
             cyl_y(mount_span+4, 2.2, true);
+    }
+
+    for (ear_side = [-1, 1]) {
+        ear_y = spring_y + ear_side*ear_offset;
+
+        difference() {
+            union() {
+                translate([
+                    spring_x,
+                    ear_y,
+                    spring_upper_pivot_z
+                ])
+                    cyl_y(
+                        spring_fork_ear_thickness,
+                        spring_fork_outer_radius,
+                        true
+                    );
+                translate([
+                    spring_x,
+                    ear_y,
+                    spring_upper_pivot_z+ear_stem_height/2
+                ])
+                    cube([
+                        2*spring_fork_outer_radius,
+                        spring_fork_ear_thickness,
+                        ear_stem_height
+                    ], center=true);
+            }
+
+            translate([
+                spring_x,
+                ear_y,
+                spring_upper_pivot_z
+            ])
+                cyl_y(
+                    spring_fork_ear_thickness+2,
+                    spring_pivot_bore_d/2,
+                    true
+                );
+        }
     }
 }
 
-module christie_suspension_unit(wheel_x, y, side_sign) {
+module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
     pivot_x = wheel_x - suspension_arm_length;
-    pickup_x = pivot_x + suspension_arm_length*suspension_pickup_ratio;
+    pickup_length = suspension_arm_length*suspension_pickup_ratio;
+    upper_pivot_x = pivot_x + pickup_length;
+    lower_pivot_x = pivot_x + pickup_length*cos(arm_angle);
+    lower_pivot_z = support_idler_z + pickup_length*sin(arm_angle);
+    moving_wheel_x = pivot_x + suspension_arm_length*cos(arm_angle);
+    moving_wheel_z = support_idler_z + suspension_arm_length*sin(arm_angle);
+    spring_dx = upper_pivot_x-lower_pivot_x;
+    spring_dz = spring_upper_pivot_z-lower_pivot_z;
+    moving_spring_height = sqrt(pow(spring_dx, 2)+pow(spring_dz, 2));
+    spring_tilt = atan2(spring_dx, spring_dz);
     arm_y = y - side_sign*suspension_arm_inboard_offset;
     spring_y = arm_y - side_sign*suspension_spring_inboard_offset;
     rail_y = side_sign*chassis_width/2;
 
     color("firebrick")
         translate([pivot_x, arm_y, support_idler_z])
-            christie_arm();
+            rotate([0, -arm_angle, 0])
+                christie_arm();
 
     // Pivot shaft bridges the hull rail to the inboard face of the arm.
     color("silver")
@@ -423,9 +505,9 @@ module christie_suspension_unit(wheel_x, y, side_sign) {
         y + side_sign*(support_idler_width/2 + 2);
     color("silver")
         translate([
-            wheel_x,
+            moving_wheel_x,
             (arm_y+wheel_axle_end_y)/2,
-            support_idler_z
+            moving_wheel_z
         ])
             cyl_y(
                 abs(wheel_axle_end_y-arm_y),
@@ -436,30 +518,46 @@ module christie_suspension_unit(wheel_x, y, side_sign) {
     // Cross-pin carries the vertical spring load into the arm pickup.
     color("silver")
         translate([
-            pickup_x,
+            lower_pivot_x,
             (arm_y+spring_y)/2,
-            support_idler_z
+            lower_pivot_z
         ])
             cyl_y(
-                abs(arm_y-spring_y)+suspension_arm_width,
-                suspension_pickup_d/2-0.25,
+                abs(arm_y-spring_y)
+                + suspension_arm_width/2
+                + spring_eyelet_width/2
+                + 2*spring_fork_pin_overhang,
+                spring_pivot_pin_d/2,
                 true
             );
 
     color("lightgray")
-        translate([pickup_x, spring_y, support_idler_z])
-            spring_lower_clevis();
-
-    color("lightgray")
-        translate([pickup_x, spring_y, spring_bottom_z])
-            vertical_spring();
+        translate([lower_pivot_x, spring_y, lower_pivot_z])
+            rotate([0, spring_tilt, 0])
+                vertical_spring(moving_spring_height);
 
     color("slategray")
-        spring_upper_mount(pickup_x, spring_y, side_sign);
+        spring_upper_fork(upper_pivot_x, spring_y, side_sign);
+
+    upper_pin_length =
+        spring_eyelet_width
+        + 2*(
+            spring_fork_clearance
+            + spring_fork_ear_thickness
+            + spring_fork_pin_overhang
+        );
+    color("silver")
+        translate([upper_pivot_x, spring_y, spring_upper_pivot_z])
+            cyl_y(
+                upper_pin_length,
+                spring_pivot_pin_d/2,
+                true
+            );
 
     color("orange")
-        translate([wheel_x, y, support_idler_z])
-            support_idler();
+        translate([moving_wheel_x, y, moving_wheel_z])
+            rotate([0, -arm_angle, 0])
+                support_idler();
 }
 
 // ---------- frame ----------
@@ -505,7 +603,7 @@ module rail_half(front=true) {
                 translate([
                     spring_x,
                     0,
-                    spring_top_z + spring_mount_thickness/2
+                    spring_mount_z
                 ])
                     cyl_y(rail_thickness+2, 2.2, true);
 
@@ -729,12 +827,7 @@ module suspension_clearance_collision() {
                 translate([
                     suspension_spring_x[i],
                     spring_y,
-                    support_idler_z
-                ]) spring_lower_clevis();
-                translate([
-                    suspension_spring_x[i],
-                    spring_y,
-                    spring_bottom_z
+                    spring_lower_pivot_z
                 ]) vertical_spring();
             }
 
@@ -754,8 +847,39 @@ module suspension_clearance_collision() {
     }
 }
 
+module spring_pivot_clearance_collision() {
+    side_sign = 1;
+    wheel_x = support_idler_x[1];
+    pivot_x = suspension_pivot_x[1];
+    spring_x = suspension_spring_x[1];
+    track_y = chassis_width/2 + track_gap + track_width/2;
+    arm_y = track_y - suspension_arm_inboard_offset;
+    spring_y = arm_y - suspension_spring_inboard_offset;
+
+    intersection() {
+        translate([
+            spring_x,
+            spring_y,
+            spring_lower_pivot_z
+        ]) vertical_spring();
+
+        union() {
+            translate([pivot_x, arm_y, support_idler_z])
+                christie_arm();
+            spring_upper_fork(spring_x, spring_y, side_sign);
+        }
+    }
+}
+
 module dimensions() {
     spacings = track_link_spacings();
+    demo_angle = 12;
+    pickup_length = suspension_arm_length*suspension_pickup_ratio;
+    demo_spring_dx = pickup_length*(1-cos(demo_angle));
+    demo_spring_dz =
+        spring_height-pickup_length*sin(demo_angle);
+    demo_spring_height =
+        sqrt(pow(demo_spring_dx, 2)+pow(demo_spring_dz, 2));
 
     echo("overall_width_mm", overall_width);
     echo("chassis_width_mm", chassis_width);
@@ -772,7 +896,9 @@ module dimensions() {
     echo("suspension_arm_length_mm", suspension_arm_length);
     echo("suspension_pivot_x_mm", suspension_pivot_x);
     echo("suspension_spring_x_mm", suspension_spring_x);
-    echo("suspension_spring_height_mm", spring_height);
+    echo("suspension_spring_pivot_spacing_mm", spring_height);
+    echo("suspension_spring_pivot_pin_d_mm", spring_pivot_pin_d);
+    echo("suspension_spring_pivot_bore_d_mm", spring_pivot_bore_d);
     echo("suspension_spring_motion_ratio", suspension_pickup_ratio);
     echo("suspension_arm_to_wheel_clearance_mm",
          suspension_arm_inboard_offset
@@ -793,8 +919,19 @@ module dimensions() {
          + suspension_spring_inboard_offset
          - support_idler_width/2
          - spring_cap_radius);
+    echo("suspension_lower_eyelet_to_arm_clearance_mm",
+         suspension_spring_inboard_offset
+         - suspension_arm_width/2
+         - spring_eyelet_width/2);
+    echo("suspension_demo_arm_angle_deg", demo_angle);
+    echo("suspension_demo_wheel_lift_mm",
+         suspension_arm_length*sin(demo_angle));
+    echo("suspension_demo_spring_compression_mm",
+         spring_height-demo_spring_height);
+    echo("suspension_demo_spring_tilt_deg",
+         atan2(demo_spring_dx, demo_spring_dz));
     echo("suspension_mount_to_top_track_clearance_mm",
-         track_top_z-(spring_top_z+spring_mount_thickness));
+         track_top_z-(spring_mount_z+spring_mount_thickness/2));
     echo("rail_half_length_mm", rail_length/2 + rail_split_overlap/2);
     echo("floor_half_size_mm", [floor_half_length,chassis_width-6]);
 }
@@ -806,10 +943,24 @@ else if (part == "sprocket") sprocket();
 else if (part == "idler") idler();
 else if (part == "support_idler") support_idler();
 else if (part == "christie_arm") christie_arm();
-else if (part == "spring_clevis") spring_lower_clevis();
 else if (part == "vertical_spring") vertical_spring();
+else if (part == "spring_upper_fork")
+    spring_upper_fork(
+        0,
+        overall_width/2-track_width/2
+        - suspension_arm_inboard_offset
+        - suspension_spring_inboard_offset,
+        1
+    );
 else if (part == "suspension_unit")
     christie_suspension_unit(0, overall_width/2-track_width/2, 1);
+else if (part == "suspension_unit_raised")
+    christie_suspension_unit(
+        0,
+        overall_width/2-track_width/2,
+        1,
+        12
+    );
 else if (part == "rail_front") rail_half(true);
 else if (part == "rail_rear") rail_half(false);
 else if (part == "crossmember") crossmember();
@@ -822,5 +973,7 @@ else if (part == "idler_collision") idler_collision();
 else if (part == "support_idler_collision") support_idler_collision();
 else if (part == "suspension_clearance_collision")
     suspension_clearance_collision();
+else if (part == "spring_pivot_clearance_collision")
+    spring_pivot_clearance_collision();
 else if (part == "dimensions") dimensions();
 else assert(false, str("Unknown part selector: ", part));
