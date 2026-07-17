@@ -1,18 +1,14 @@
 {
   "model": "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad",
-  "model_sha256": "6681f1d1cf2a5a2da7b457910d5db437fde3416e3936b8140991df493c3c0efb",
+  "model_sha256": "80f1dcd6048b57b34fa704fcab8d9ab3fef2f2ceb41b93b57b458c82a68f91b1",
   "openscad": "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
   "size": [
-    1200,
-    900
+    1400,
+    1000
   ],
   "projection": "orthographic",
   "mode": "render",
-  "defines": [
-    "part=\"assembly\"",
-    "show_tracks=true",
-    "show_motor_placeholders=false"
-  ],
+  "defines": [],
   "results": [
     {
       "view": "top",
@@ -23,22 +19,16 @@
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,0,0,0,100",
-        "--imgsize=1200,900",
+        "--imgsize=1400,1000",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
-        "-D",
-        "part=\"assembly\"",
-        "-D",
-        "show_tracks=true",
-        "-D",
-        "show_motor_placeholders=false",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/top.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 381\nGeometry cache size in bytes: 2790464\nCGAL Polyhedrons in cache: 179\nCGAL cache size in bytes: 104794750\nTotal rendering time: 0:00:00.722\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      334\n   Vertices:    89611\n   Facets:     180554"
+      "output": "Geometries in cache: 482\nGeometry cache size in bytes: 3392632\nCGAL Polyhedrons in cache: 165\nCGAL cache size in bytes: 104732000\nTotal rendering time: 0:00:00.839\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      332\n   Vertices:    94417\n   Facets:     190158"
     },
     {
       "view": "left",
@@ -49,22 +39,16 @@
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,90,0,0,100",
-        "--imgsize=1200,900",
+        "--imgsize=1400,1000",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
-        "-D",
-        "part=\"assembly\"",
-        "-D",
-        "show_tracks=true",
-        "-D",
-        "show_motor_placeholders=false",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/left.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 381\nGeometry cache size in bytes: 2790464\nCGAL Polyhedrons in cache: 179\nCGAL cache size in bytes: 104794750\nTotal rendering time: 0:00:00.726\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      334\n   Vertices:    89611\n   Facets:     180554"
+      "output": "Geometries in cache: 482\nGeometry cache size in bytes: 3392632\nCGAL Polyhedrons in cache: 165\nCGAL cache size in bytes: 104732000\nTotal rendering time: 0:00:00.839\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      332\n   Vertices:    94417\n   Facets:     190158"
     },
     {
       "view": "bottom",
@@ -75,22 +59,16 @@
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,180,0,0,100",
-        "--imgsize=1200,900",
+        "--imgsize=1400,1000",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
-        "-D",
-        "part=\"assembly\"",
-        "-D",
-        "show_tracks=true",
-        "-D",
-        "show_motor_placeholders=false",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/bottom.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 381\nGeometry cache size in bytes: 2790464\nCGAL Polyhedrons in cache: 179\nCGAL cache size in bytes: 104794750\nTotal rendering time: 0:00:00.759\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      334\n   Vertices:    89611\n   Facets:     180554"
+      "output": "Geometries in cache: 482\nGeometry cache size in bytes: 3392632\nCGAL Polyhedrons in cache: 165\nCGAL cache size in bytes: 104732000\nTotal rendering time: 0:00:00.860\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      332\n   Vertices:    94417\n   Facets:     190158"
     },
     {
       "view": "right",
@@ -101,22 +79,16 @@
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,90,0,180,100",
-        "--imgsize=1200,900",
+        "--imgsize=1400,1000",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
-        "-D",
-        "part=\"assembly\"",
-        "-D",
-        "show_tracks=true",
-        "-D",
-        "show_motor_placeholders=false",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/right.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 381\nGeometry cache size in bytes: 2790464\nCGAL Polyhedrons in cache: 179\nCGAL cache size in bytes: 104794750\nTotal rendering time: 0:00:00.762\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      334\n   Vertices:    89611\n   Facets:     180554"
+      "output": "Geometries in cache: 482\nGeometry cache size in bytes: 3392632\nCGAL Polyhedrons in cache: 165\nCGAL cache size in bytes: 104732000\nTotal rendering time: 0:00:00.877\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      332\n   Vertices:    94417\n   Facets:     190158"
     },
     {
       "view": "isometric",
@@ -127,22 +99,16 @@
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,55,0,25,100",
-        "--imgsize=1200,900",
+        "--imgsize=1400,1000",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
-        "-D",
-        "part=\"assembly\"",
-        "-D",
-        "show_tracks=true",
-        "-D",
-        "show_motor_placeholders=false",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/isometric.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 381\nGeometry cache size in bytes: 2790464\nCGAL Polyhedrons in cache: 179\nCGAL cache size in bytes: 104794750\nTotal rendering time: 0:00:00.724\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      334\n   Vertices:    89611\n   Facets:     180554"
+      "output": "Geometries in cache: 482\nGeometry cache size in bytes: 3392632\nCGAL Polyhedrons in cache: 165\nCGAL cache size in bytes: 104732000\nTotal rendering time: 0:00:00.862\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      332\n   Vertices:    94417\n   Facets:     190158"
     }
   ]
 }

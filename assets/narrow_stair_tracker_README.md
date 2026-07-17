@@ -17,6 +17,54 @@ geometry.
 The 340 mm overall width is almost exactly two-thirds of the roughly 508 mm
 width previously discussed for the larger Snowcat-style platform.
 
+## Shared printer envelope
+
+Printer dimensions are defined once in `assets/printer_config.scad` and
+imported by the chassis with `include <printer_config.scad>`. The defaults are:
+
+- printer: Bambu Lab X1C
+- build envelope: 256 x 256 x 256 mm
+- reserved edge margin: 3 mm on every side
+- asserted usable envelope: 250 x 250 x 250 mm
+
+Change those shared variables when targeting another printer. The chassis
+assertions will stop the render if a print-oriented body module exceeds the
+configured usable envelope.
+
+## Four-module structural body
+
+The main body is split into four structural quadrants. Robot front is +X and
+robot left is +Y:
+
+- `body_front_left`
+- `body_front_right`
+- `body_rear_left`
+- `body_rear_right`
+
+Each selector automatically rotates its module onto the broad outside rail
+face for export and slicing. The maximum print-oriented envelope is
+approximately **245 x 101.2 x 111.9 mm**, inside the shared 250 mm usable
+envelope. This orientation keeps the floor, outer rail, transverse bulkhead,
+and floor-to-rail rib vertical instead of suspending the floor above the
+dropped suspension lugs.
+
+The four modules have a modelled 0.3 mm joint clearance. They are joined by:
+
+- two complementary 40 mm half-thickness rail laps, each clamped by four M4
+  bolts through the solid upper and lower rail webs
+- two 64 x 30 x 4 mm underside plates across the front/rear floor seam
+- two 30 x 64 x 4 mm underside plates across the left/right floor seam
+- two 4 x 50 x 42 mm plates across the left/right transverse bulkhead seams
+
+The old full-thickness rail overlap has been removed; it placed both printed
+halves in the same volume and could not have been assembled physically.
+
+The model uses 4.4 mm clearance holes. As a starting hardware set, allow for 32
+M4 bolts plus washers and locknuts: 16 for the floor plates, eight for the
+bulkhead plates, and eight for the rail laps. Confirm actual grip lengths after
+printing; M4 x 16 mm is a reasonable floor-plate starting point and M4 x 20 mm
+is a reasonable rail/bulkhead starting point.
+
 ## Assembly colour legend
 
 The OpenSCAD preview uses component colours to make the mechanism easier to
@@ -33,6 +81,8 @@ read. Colours do not affect exported STL geometry:
 - 608 bearings: blue
 - bolts, shafts, pins, and nuts: black
 - washers, spacers, and motor shafts: steel grey
+- the four structural body modules: separate blue-grey, green-grey,
+  purple-grey, and brown-grey shades
 
 All values are grouped in the `assembly colours` section near the top of
 `narrow_stair_tracker.scad`.
@@ -102,7 +152,7 @@ the track's downward reach relative to the chassis.
 
 Each road wheel is carried by an independent Christie-style suspension unit:
 
-- 55 mm horizontal trailing/bellcrank arm
+- 55 mm trailing/bellcrank arm, angled downward at nominal ride height
 - 6.2 mm hull-pivot bore in the rail's lower structural web
 - wheel axle at the arm tip
 - vertical spring pickup 60% of the way from pivot to wheel axle
@@ -113,7 +163,12 @@ Each road wheel is carried by an independent Christie-style suspension unit:
 - 14 mm-wide vertical fork gusset carrying spring load back to the rail
 - two M4 fork-bracket bolts on 13.5 mm vertical centres
 - 18 mm-wide full-height rail column behind each upper spring mount
-- 12 mm-radius dropped rail lug around every lowered arm pivot
+- 12 mm-radius rail boss around every arm pivot, flush with the rail bottom
+
+The arm pivots have been raised so the 12 mm-radius boss bottoms are exactly
+flush with the bottom of the rail plates at z = 42 mm. The road-wheel axles
+remain at z = 38.758 mm, so the arms angle downward at nominal ride height while
+preserving the existing track contact line.
 
 When a wheel rises, its arm rotates upward about the hull pivot. The intermediate
 pickup rises by 60% of the wheel's small-angle travel and compresses the vertical
@@ -142,7 +197,7 @@ The loop is generated from link-centre positions around the pitch circle. The
 reported adjacent-centre spacing is 30.000 to 30.077 mm; the small maximum
 variation occurs at a straight-to-wrap transition.
 
-Six diagnostic selectors are available:
+Seven diagnostic selectors are available:
 
 - `drive_collision`: cog against the seven links around the rear drive wrap
 - `front_cog_collision`: bearing cog against the eight links around the front
@@ -156,23 +211,27 @@ Six diagnostic selectors are available:
   road wheels, end wheels, and hull rail
 - `spring_pivot_clearance_collision`: spring eyelets and body against the arm
   and upper fork, excluding their intended pins
+- `body_module_collision`: all six pairings of the four structural body
+  quadrants; the 0.3 mm seam clearances mean the expected result is empty
 
-All six are expected to render as an empty object. A non-empty result means
+All seven are expected to render as an empty object. A non-empty result means
 that one of the checked components has solid interference beyond the documented
 tangent allowance.
 
 ## X1C printability
 
-The default parts are split so their nominal XY footprints fit within a
-256 x 256 mm bed:
+The default parts are checked against the shared printer envelope:
 
-- Rail half: approximately 235 x 102 mm when laid flat
-- Floor half: 230 x 208 mm
+- Body quadrant: approximately 245 x 101.2 mm in its export orientation
+- Longitudinal floor plate: 64 x 30 mm
+- Transverse floor plate: 30 x 64 mm
+- Bulkhead plate: 50 x 42 mm in its export orientation
 - Crossmember: 214 x 28 mm
 - Rear and front cogs: under 120 mm diameter
 - Track link: 40 x 55 mm including hinge barrels
 
-Reorient rail, gearbox, and motor plates flat before slicing.
+The body selectors are already print-oriented. Reorient the legacy rail,
+gearbox, and motor plate selectors flat before slicing.
 
 ## Exporting parts
 
@@ -198,6 +257,16 @@ Available values:
 - `spring_upper_fork`
 - `suspension_unit`
 - `suspension_unit_raised`
+- `body_only`
+- `body_front_left`
+- `body_front_right`
+- `body_rear_left`
+- `body_rear_right`
+- `body_joiner_set`
+- `floor_joiner_longitudinal`
+- `floor_joiner_transverse`
+- `bulkhead_joiner_plate`
+- `motor_pair`
 - `rail_front`
 - `rail_rear`
 - `crossmember`
@@ -211,6 +280,8 @@ Available values:
 - `support_idler_collision`
 - `suspension_clearance_collision`
 - `spring_pivot_clearance_collision`
+- `body_module_collision`
+- `motor_body_collision`
 - `dimensions`
 
 Render with F6, then export the selected part as STL.
@@ -245,7 +316,13 @@ Do these before printing a complete set:
    the wheel-travel direction. Inspect the fork gusset, rail column, dropped
    pivot lug, and layer lines for cracking or permanent movement.
 11. Weigh the completed robot and calculate the spring rate, preload, damping,
-   bump stop, and maximum arm angle before powered stair testing.
+    bump stop, and maximum arm angle before powered stair testing.
+12. Print the four body modules and all six splice plates in inexpensive
+    material first. Dry-fit the 0.3 mm seams, install every M4 fastener, and
+    confirm the body sits square without forcing the rail laps together.
+13. Load the assembled body across opposite corners and inspect the rail laps,
+    floor plates, bulkhead plates, and layer lines for movement before mounting
+    the drivetrain or batteries.
 
 ## Materials
 
@@ -259,6 +336,9 @@ A sensible first build would use:
 - Suspension arms and upper mounts: PA-CF or machined metal after prototype fit
 - Suspension springs and pivot/axle pins: steel hardware, not printed substitutes
 - Frame rails and floor: ASA, PC, or PA-CF
+- Body splice plates: PA-CF for the first fit check; 3-4 mm aluminium plates
+  are preferable for the final high-load stair chassis
+- Body fasteners: M4 steel bolts with wide washers and locknuts
 - Optional traction pads: separate TPU inserts or bonded TPU strips
 - Hinge pins: 3 mm stainless rod or cut-down machine screws
 - Rear drive axles: 8 mm steel
@@ -271,6 +351,13 @@ The model includes a generic 42 mm brushless motor plate and gearbox side plate,
 but **does not contain a validated reduction gearbox**. A low-KV outrunner still
 needs substantial reduction for controlled stair climbing. Treat the motor and
 gearbox geometry as an interface placeholder, not a finished transmission.
+
+The two 42 mm motor envelopes are positioned inside the rear body modules,
+immediately inboard of the side rails. Each motor clears the rear transverse
+bulkhead by 2 mm, the floor by 3 mm, and the inner rail face by 2 mm. Its shaft
+axis is 18 mm forward and 17 mm above the rear driven-cog axis, leaving a compact
+parallel-shaft reduction envelope without placing the motor through the floor or
+the new body joint.
 
 For the next iteration, choose the actual motor, battery voltage, desired track
 speed, and reduction method first. Those determine shaft spacing, gearbox size,

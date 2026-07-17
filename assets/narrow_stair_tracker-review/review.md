@@ -8,15 +8,31 @@ front cogs. Each front cog uses one 608 bearing and the specified 7.95 mm x
 rail-mounted bracket. The rear drive cog geometry is unchanged, so the cog
 printed before this revision remains usable at the driven end.
 
-The model is ready for a single-side physical fit prototype. It is not yet
-validated for stair-impact loads.
+The chassis body is also split into four print-oriented structural quadrants
+with complementary rail laps, floor splice plates, and transverse-bulkhead
+splice plates. Printer dimensions are imported from the shared
+`assets/printer_config.scad` file.
+
+The two motor envelopes now sit wholly inside the rear body modules rather
+than crossing the new transverse bulkheads. Their parallel shaft axes remain
+offset from the rear driven-cog axes for a future reduction stage.
+
+The model is ready for front-cog and four-module body fit prototypes. It is not
+yet validated for stair-impact loads.
 
 ## Checks completed
 
 - The full assembly and all new selectors compile in OpenSCAD 2026.06.12.
 - Full top, left, bottom, right, and isometric renders were generated and
   inspected for the complete tracked assembly, front cog assembly, printable
-  front cog, printable mount bracket, and modified front rail.
+  front cog, printable mount bracket, modified front rail, assembled body, all
+  four print-oriented body modules, and the body joiner system.
+- All four body modules and all three splice-plate types export as manifold
+  STLs. The maximum body-module print envelope is approximately
+  245 x 101.242 x 111.85 mm.
+- The body-module collision fixture is empty for all six module pairings. The
+  new 0.3 mm rail, floor, and bulkhead seam clearances remove coplanar printed
+  fits and impossible shared volume.
 - Both front wheels use the same 11-tooth, 30 mm-pitch, tapered-tooth geometry
   as the rear cog. The printed rear cog geometry was not changed.
 - The front cog/track collision fixture is empty for all eight links around the
@@ -24,6 +40,9 @@ validated for stair-impact loads.
 - The front cog/stationary-hardware collision fixture is empty.
 - The rear cog/link, support-idler/track, suspension-clearance, and
   spring-pivot-clearance fixtures remain empty.
+- The motor-body/body collision fixture is empty. Each 42 x 48 mm motor
+  envelope has 2 mm nominal clearance from the rear bulkhead and inner rail,
+  plus 3 mm above the floor.
 - The 608 reference dimensions are 8 mm ID x 22 mm OD x 7 mm wide. The printed
   seat is 22.2 mm diameter x 7 mm deep as a starting fit.
 - The modelled shoulder is 7.95 mm diameter x 10 mm long. Its stack is exactly
@@ -62,6 +81,8 @@ validated for stair-impact loads.
   boss without removing the existing locating socket.
 - No disconnected solids, missing holes, left/right mirroring errors, or
   visible rotating/stationary overlaps remain in the reviewed selectors.
+- Top, bottom, and isometric views show both motors symmetrically contained in
+  the rear modules, clear of the centre body seam and transverse bulkheads.
 
 ## Remaining physical checks
 
@@ -88,6 +109,9 @@ validated for stair-impact loads.
    fixed.
 9. Validate spring rate, damping, bump stops, track pins, the rear drive axle,
    and gearbox reduction before powered stair testing.
+10. Print and bolt together the four body quadrants with all six splice plates.
+    Check squareness, seam fit, bolt access, and diagonal stiffness before
+    mounting the drivetrain or batteries.
 
 ## Fit-to-purpose judgment
 
@@ -97,4 +121,6 @@ the M6 thread carries the bearing, and the bracket load path reaches a
 reinforced rail boss. The main remaining risks are the single-bearing moment
 load, printed bracket nose and captive-nut strength, actual bolt dimensions,
 bearing-seat tolerance, and the lack of track tension adjustment. Resolve
-those with one physical front assembly before printing the second side.
+those with one physical front assembly before printing the second side. The
+four-module body is geometrically coherent, but its printed rail laps and
+splice plates still require a complete dry-fit and diagonal-load prototype.

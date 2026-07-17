@@ -11,8 +11,8 @@
     track contact length: 390 mm
     sprocket pitch dia:  ~105 mm
 
-  Designed around a 256 x 256 mm printer bed. Long frame rails and floor panels
-  are split into printable halves.
+  Designed around a 256 x 256 mm printer bed. The structural body is split into
+  four printable quadrants joined with bolted rail laps and splice plates.
 
   IMPORTANT:
     This is a mechanical layout / first prototype, not a validated drivetrain.
@@ -22,6 +22,7 @@
   Export parts by changing `part` below.
 */
 
+include <printer_config.scad>
 use <track_links.scad>
 
 $fn = 45;
@@ -32,16 +33,24 @@ part = "assembly";
 // front_cog_mount, shoulder_bolt, bearing_608, support_idler,
 // christie_arm, vertical_spring, spring_upper_fork,
 // suspension_unit, suspension_unit_raised,
+// body_only, body_front_left, body_front_right,
+// body_rear_left, body_rear_right, body_joiner_set,
+// floor_joiner_longitudinal, floor_joiner_transverse,
+// bulkhead_joiner_plate,
 // rail_front, rail_rear, crossmember, floor_front, floor_rear,
-// motor_plate, gearbox_plate, drive_collision, front_cog_collision,
+// motor_pair, motor_plate, gearbox_plate,
+// drive_collision, front_cog_collision,
 // front_cog_hardware_collision,
 // support_idler_collision, suspension_clearance_collision,
-// spring_pivot_clearance_collision, dimensions
+// spring_pivot_clearance_collision, body_module_collision,
+// motor_body_collision, dimensions
 
 exploded = 0;          // 0 for normal assembly, 1 for mildly exploded
 show_tracks = true;
 show_motor_placeholders = true;
 show_floor = true;
+show_body_joiners = true;
+body_collision_pair = -1; // -1 checks every pair; 0..5 isolates one seam
 
 // ---------- assembly colours ----------
 // These affect previews and review renders only; exported STL geometry is
@@ -58,6 +67,10 @@ colour_bearing = "#2878D0";
 colour_fastener = "#17191C";
 colour_steel = "#AEB5BE";
 colour_motor = "#555D68";
+colour_body_front_left = "#526D82";
+colour_body_front_right = "#607A67";
+colour_body_rear_left = "#705D7D";
+colour_body_rear_right = "#82634F";
 
 // ---------- primary envelope ----------
 overall_width = 340;
@@ -84,15 +97,42 @@ rail_length = 450;
 rail_height = 86;
 rail_thickness = 10;
 rail_bottom_z = 42;
-rail_split_overlap = 20;
+rail_split_overlap = 40;
+body_joint_clearance = 0.3;
+rail_split_bolt_x = [-8, 8];
+rail_split_bolt_z = [50, 120];
 
 floor_thickness = 4;
 floor_z = 48;
-floor_half_length = 230;
+floor_length = 440;
+floor_width = chassis_width - rail_thickness - 2*body_joint_clearance;
+floor_quarter_length = (floor_length-body_joint_clearance)/2;
+floor_quarter_width = (floor_width-body_joint_clearance)/2;
 
 crossmember_x = 28;
 crossmember_z = 24;
 crossmember_wall = 3;
+
+// ---------- four-module body joints ----------
+// Front is +X, robot-left is +Y. Each structural quadrant is no larger than
+// 245 x 112 mm in the assembled XY orientation. The shared printer envelope
+// determines whether that leaves enough usable bed area.
+body_bulkhead_x = 8;
+body_bulkhead_top_z = 94;
+body_bulkhead_positions = [-150, 150];
+body_bulkhead_bolt_y = [-15, 15];
+body_bulkhead_bolt_z = [62, 84];
+
+body_joiner_thickness = 4;
+body_joiner_bolt_d = 4.4;
+floor_joiner_x_size = [64, 30];
+floor_joiner_y_size = [30, 64];
+floor_joiner_x_y = [-58, 58];
+floor_joiner_y_x = [-115, 115];
+floor_joiner_bolt_x = [-22, 22];
+floor_joiner_bolt_y = [-22, 22];
+floor_joiner_cross_offset = 8;
+bulkhead_joiner_size = [4, 50, 42];
 
 // ---------- front undriven cog and axle ----------
 // One 608 bearing is pressed into the outer half of each front cog. The
@@ -157,22 +197,32 @@ support_idler_x = [-110, 0, 110];
 support_idler_z = track_bottom_z + support_idler_radius;
 
 // ---------- Christie suspension ----------
-// The arm is horizontal at nominal ride height. Wheel motion upward rotates the
-// arm about its hull pivot and raises the spring pickup, compressing the spring.
+// The hull pivot bosses finish flush with the bottom of the rail plate. The
+// arms angle down to retain the lowered road-wheel and track contact line.
+// Wheel motion upward rotates each arm and compresses its spring.
 suspension_arm_length = 55;
 suspension_arm_width = 8;
 suspension_arm_height = 12;
 suspension_arm_boss_radius = 9;
 suspension_pivot_d = 6.2;
+suspension_pivot_lug_radius = 12;
+suspension_pivot_z = rail_bottom_z + suspension_pivot_lug_radius;
+suspension_nominal_arm_angle = asin(
+    (support_idler_z-suspension_pivot_z)/suspension_arm_length
+);
 suspension_pickup_ratio = 0.60;
 suspension_pickup_d = 4.2;
 suspension_pivot_x = [
     for (wheel_x = support_idler_x)
-        wheel_x - suspension_arm_length
+        wheel_x
+        - suspension_arm_length*cos(suspension_nominal_arm_angle)
 ];
 suspension_spring_x = [
     for (pivot_x = suspension_pivot_x)
-        pivot_x + suspension_arm_length*suspension_pickup_ratio
+        pivot_x
+        + suspension_arm_length
+            * suspension_pickup_ratio
+            * cos(suspension_nominal_arm_angle)
 ];
 
 suspension_arm_inboard_offset =
@@ -190,7 +240,11 @@ spring_eyelet_width = 6;
 spring_eyelet_neck_height = 8;
 spring_pivot_pin_d = 4;
 spring_pivot_bore_d = 4.4;
-spring_lower_pivot_z = support_idler_z;
+spring_lower_pivot_z =
+    suspension_pivot_z
+    + suspension_arm_length
+        * suspension_pickup_ratio
+        * sin(suspension_nominal_arm_angle);
 spring_upper_pivot_z = 110 - running_gear_drop;
 spring_height = spring_upper_pivot_z - spring_lower_pivot_z;
 spring_mount_width = 18;
@@ -205,7 +259,6 @@ spring_mount_rib_bottom_z =
     spring_upper_pivot_z - spring_fork_outer_radius + 1;
 spring_mount_lower_bolt_z = spring_upper_pivot_z - 3;
 spring_rail_rib_width = 18;
-suspension_pivot_lug_radius = 12;
 spring_mount_bottom_z =
     spring_upper_pivot_z + spring_fork_outer_radius + 1;
 spring_mount_z = spring_mount_bottom_z + spring_mount_thickness/2;
@@ -220,11 +273,78 @@ assert(
     "Spring pickup must lie between the suspension pivot and wheel axle"
 );
 
+body_module_low_z = min(
+    rail_bottom_z,
+    suspension_pivot_z-suspension_pivot_lug_radius
+);
+body_module_high_z = rail_bottom_z+rail_height;
+body_module_outer_y = chassis_width/2+rail_thickness/2;
+body_module_inner_y = body_joint_clearance/2;
+body_module_print_size = [
+    rail_length/2 + rail_split_overlap/2,
+    body_module_high_z-body_module_low_z,
+    body_module_outer_y-body_module_inner_y
+];
+
+assert(
+    body_module_print_size[0] <= printer_usable_x,
+    str("A body module rail exceeds the usable X envelope of ", printer_name)
+);
+assert(
+    body_module_print_size[1] <= printer_usable_y,
+    str("A body module exceeds the usable Y envelope of ", printer_name)
+);
+assert(
+    body_module_print_size[2] <= printer_usable_z,
+    str("A body module exceeds the usable Z envelope of ", printer_name)
+);
+
 sprocket_width = 14;
 
+// ---------- rear drive motors ----------
+// The motor axes sit inside the rear body modules, parallel to the driven-cog
+// axles. They are deliberately offset above and forward of the cog axes so a
+// compact reduction stage can connect them; a 300 KV outrunner must not drive
+// the track cog directly.
 motor_d = 42;
 motor_length = 48;
 motor_shaft_d = 8;
+motor_body_clearance = 2;
+motor_floor_clearance = 3;
+motor_x =
+    body_bulkhead_positions[0]
+    - body_bulkhead_x/2
+    - motor_body_clearance
+    - motor_d/2;
+motor_y =
+    chassis_width/2
+    - rail_thickness/2
+    - motor_body_clearance
+    - motor_length/2;
+motor_z =
+    floor_z
+    + floor_thickness/2
+    + motor_floor_clearance
+    + motor_d/2;
+motor_to_drive_offset = [
+    motor_x + wheelbase/2,
+    motor_z - axle_z
+];
+
+assert(
+    motor_x + motor_d/2
+        <= body_bulkhead_positions[0] - body_bulkhead_x/2,
+    "Rear motors overlap the body bulkhead"
+);
+assert(
+    motor_z - motor_d/2 >= floor_z + floor_thickness/2,
+    "Rear motors overlap the floor"
+);
+assert(
+    motor_y + motor_length/2
+        <= chassis_width/2 - rail_thickness/2,
+    "Rear motors overlap the inside rail face"
+);
 
 // ---------- helpers ----------
 module rounded_rect_2d(size=[10,10], r=2) {
@@ -245,6 +365,10 @@ module rounded_box(size=[10,10,10], r=2, center=true) {
 
 module cyl_y(h, r, center=true) {
     rotate([90,0,0]) cylinder(h=h, r=r, center=center);
+}
+
+module cyl_x(h, r, center=true) {
+    rotate([0,90,0]) cylinder(h=h, r=r, center=center);
 }
 
 module hex_prism_y(h, across_flats, center=true) {
@@ -798,14 +922,20 @@ module spring_upper_fork(spring_x, spring_y, side_sign) {
     }
 }
 
-module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
-    pivot_x = wheel_x - suspension_arm_length;
+module christie_suspension_unit(wheel_x, y, side_sign, arm_lift_angle=0) {
+    actual_arm_angle = suspension_nominal_arm_angle + arm_lift_angle;
+    pivot_x =
+        wheel_x
+        - suspension_arm_length*cos(suspension_nominal_arm_angle);
     pickup_length = suspension_arm_length*suspension_pickup_ratio;
-    upper_pivot_x = pivot_x + pickup_length;
-    lower_pivot_x = pivot_x + pickup_length*cos(arm_angle);
-    lower_pivot_z = support_idler_z + pickup_length*sin(arm_angle);
-    moving_wheel_x = pivot_x + suspension_arm_length*cos(arm_angle);
-    moving_wheel_z = support_idler_z + suspension_arm_length*sin(arm_angle);
+    upper_pivot_x =
+        pivot_x + pickup_length*cos(suspension_nominal_arm_angle);
+    lower_pivot_x = pivot_x + pickup_length*cos(actual_arm_angle);
+    lower_pivot_z = suspension_pivot_z + pickup_length*sin(actual_arm_angle);
+    moving_wheel_x = pivot_x + suspension_arm_length*cos(actual_arm_angle);
+    moving_wheel_z =
+        suspension_pivot_z
+        + suspension_arm_length*sin(actual_arm_angle);
     spring_dx = upper_pivot_x-lower_pivot_x;
     spring_dz = spring_upper_pivot_z-lower_pivot_z;
     moving_spring_height = sqrt(pow(spring_dx, 2)+pow(spring_dz, 2));
@@ -815,8 +945,8 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
     rail_y = side_sign*chassis_width/2;
 
     color(colour_suspension_arm)
-        translate([pivot_x, arm_y, support_idler_z])
-            rotate([0, -arm_angle, 0])
+        translate([pivot_x, arm_y, suspension_pivot_z])
+            rotate([0, -actual_arm_angle, 0])
                 christie_arm();
 
     // Pivot shaft bridges the hull rail to the inboard face of the arm.
@@ -824,7 +954,7 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
         translate([
             pivot_x,
             (rail_y+arm_y)/2,
-            support_idler_z
+            suspension_pivot_z
         ])
             cyl_y(
                 abs(arm_y-rail_y)+suspension_arm_width,
@@ -888,7 +1018,7 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
 
     color(colour_road_wheel)
         translate([moving_wheel_x, y, moving_wheel_z])
-            rotate([0, -arm_angle, 0])
+            rotate([0, -actual_arm_angle, 0])
                 support_idler();
 }
 
@@ -904,113 +1034,144 @@ module rail_blank(length=230) {
     }
 }
 
-module rail_half(front=true) {
-    half_len = rail_length/2 + rail_split_overlap/2;
-    x_sign = front ? 1 : -1;
-    x_origin = x_sign * (rail_length/4 - rail_split_overlap/4);
-
+module rail_complete() {
     difference() {
         union() {
-            translate([x_origin,0,0]) rail_blank(half_len);
+            rail_blank(rail_length);
 
-            // Dropped bosses keep the lowered arm pivots tied into the lower
-            // rail web instead of leaving their axes below the frame.
+            // Each arm-pivot boss is fully tied into the lower rail web, with
+            // its circular bottom exactly flush with the rail plate bottom.
             for (pivot_x = suspension_pivot_x)
-                if ((front && pivot_x >= -rail_split_overlap/2) ||
-                    (!front && pivot_x <= rail_split_overlap/2))
-                    hull() {
-                        translate([
-                            pivot_x,
-                            0,
-                            rail_bottom_z + suspension_pivot_lug_radius
-                        ])
-                            cyl_y(
-                                rail_thickness,
-                                suspension_pivot_lug_radius,
-                                true
-                            );
-                        translate([pivot_x,0,support_idler_z])
-                            cyl_y(
-                                rail_thickness,
-                                suspension_pivot_lug_radius,
-                                true
-                            );
-                    }
+                translate([pivot_x,0,suspension_pivot_z])
+                    cyl_y(
+                        rail_thickness,
+                        suspension_pivot_lug_radius,
+                        true
+                    );
 
             // A full-height solid column behind every upper fork gives both
             // mount bolts real material and ties the load into both rail webs.
             for (spring_x = suspension_spring_x)
-                if ((front && spring_x >= -rail_split_overlap/2) ||
-                    (!front && spring_x <= rail_split_overlap/2))
-                    translate([
-                        spring_x,
-                        0,
-                        rail_bottom_z + rail_height/2
-                    ])
-                        cube([
-                            spring_rail_rib_width,
-                            rail_thickness,
-                            rail_height
-                        ], center=true);
+                translate([
+                    spring_x,
+                    0,
+                    rail_bottom_z + rail_height/2
+                ])
+                    cube([
+                        spring_rail_rib_width,
+                        rail_thickness,
+                        rail_height
+                    ], center=true);
 
             // The front cog bracket bolts to a reinforced rail boss. The
             // former 608 pocket remains as a locating socket for its spigot.
-            if (front)
-                translate([wheelbase/2, 0, axle_z])
-                    cyl_y(
-                        rail_thickness,
-                        front_mount_rail_boss_radius,
-                        true
-                    );
+            translate([wheelbase/2, 0, axle_z])
+                cyl_y(
+                    rail_thickness,
+                    front_mount_rail_boss_radius,
+                    true
+                );
         }
 
-        // Rear: drive-shaft bearing pocket. Front: bracket locating socket.
-        end_x = x_sign * wheelbase/2;
-        translate([end_x,0,axle_z])
-            cyl_y(rail_thickness+2, bearing_od/2, true);
+        // Rear drive-shaft pocket and front bracket locating socket.
+        for (end_x = [-wheelbase/2, wheelbase/2])
+            translate([end_x,0,axle_z])
+                cyl_y(rail_thickness+2, bearing_od/2, true);
 
-        if (front)
-            translate([wheelbase/2, 0, axle_z])
-                bolt_circle_y(
-                    front_mount_bolt_bcd,
-                    front_mount_bolt_d,
-                    4,
-                    rail_thickness + 2,
-                    45
-                );
+        translate([wheelbase/2, 0, axle_z])
+            bolt_circle_y(
+                front_mount_bolt_bcd,
+                front_mount_bolt_d,
+                4,
+                rail_thickness + 2,
+                45
+            );
 
         // Christie-arm pivot bores in the lower structural web.
         for (pivot_x = suspension_pivot_x)
-            if ((front && pivot_x >= -rail_split_overlap/2) ||
-                (!front && pivot_x <= rail_split_overlap/2))
-                translate([pivot_x,0,support_idler_z])
-                    cyl_y(
-                        rail_thickness+2,
-                        suspension_pivot_d/2,
-                        true
-                    );
+            translate([pivot_x,0,suspension_pivot_z])
+                cyl_y(
+                    rail_thickness+2,
+                    suspension_pivot_d/2,
+                    true
+                );
 
         // Twin spring-mount cross-bolts through the vertical rail ribs.
         for (spring_x = suspension_spring_x)
-            if ((front && spring_x >= -rail_split_overlap/2) ||
-                (!front && spring_x <= rail_split_overlap/2))
-                for (bolt_z = [spring_mount_lower_bolt_z, spring_mount_z])
-                    translate([spring_x,0,bolt_z])
-                        cyl_y(rail_thickness+2, 2.2, true);
-
-        // Crossmember bolt holes
-        for (cx = [-150, 0, 150])
-            if ((front && cx >= -rail_split_overlap/2) ||
-                (!front && cx <= rail_split_overlap/2))
-                for (zv=[58,92])
-                    translate([cx,0,zv])
-                        cyl_y(rail_thickness+2, 2.2, true);
-
-        // Splice bolt holes through overlap
-        for (sx=[-7,7])
-            for (sz=[58,92])
-                translate([sx,0,sz])
+            for (bolt_z = [spring_mount_lower_bolt_z, spring_mount_z])
+                translate([spring_x,0,bolt_z])
                     cyl_y(rail_thickness+2, 2.2, true);
+    }
+}
+
+module rail_split_mask(front=true) {
+    half_length = rail_length/2;
+    lap_half = rail_split_overlap/2;
+    tongue_thickness = (rail_thickness-body_joint_clearance)/2;
+    tongue_y = (rail_thickness+body_joint_clearance)/4;
+    tongue_length = rail_split_overlap-body_joint_clearance/2;
+    full_length = half_length-lap_half;
+
+    // The two masks form a complementary half-thickness scarf. Unlike the old
+    // full-thickness overlap, these solids have a controlled printable gap.
+    if (front) {
+        translate([
+            (lap_half + half_length)/2,
+            0,
+            rail_bottom_z + rail_height/2
+        ])
+            cube([
+                full_length,
+                rail_thickness,
+                rail_height + 2*front_mount_rail_boss_radius
+            ], center=true);
+        translate([
+            body_joint_clearance/4,
+            -tongue_y,
+            rail_bottom_z + rail_height/2
+        ])
+            cube([
+                tongue_length,
+                tongue_thickness,
+                rail_height + 2*front_mount_rail_boss_radius
+            ], center=true);
+    } else {
+        translate([
+            (-half_length - lap_half)/2,
+            0,
+            rail_bottom_z + rail_height/2
+        ])
+            cube([
+                full_length,
+                rail_thickness,
+                rail_height + 2*front_mount_rail_boss_radius
+            ], center=true);
+        translate([
+            -body_joint_clearance/4,
+            tongue_y,
+            rail_bottom_z + rail_height/2
+        ])
+            cube([
+                tongue_length,
+                tongue_thickness,
+                rail_height + 2*front_mount_rail_boss_radius
+            ], center=true);
+    }
+}
+
+module rail_half(front=true) {
+    difference() {
+        intersection() {
+            rail_complete();
+            rail_split_mask(front);
+        }
+
+        // Four M4 bolts clamp the complementary rail layers together through
+        // the solid top and bottom webs, clear of the middle spring bracket.
+        for (sx = rail_split_bolt_x)
+            for (sz = rail_split_bolt_z)
+                translate([sx,0,sz])
+                    cyl_y(rail_thickness+2, body_joiner_bolt_d/2, true);
     }
 }
 
@@ -1030,23 +1191,197 @@ module crossmember() {
     }
 }
 
-module floor_half(front=true) {
+module floor_quarter(front=true, side_sign=1) {
     x_sign = front ? 1 : -1;
-    x_origin = x_sign*(floor_half_length/2 - 10);
+    x_origin = x_sign*(body_joint_clearance/2 + floor_quarter_length/2);
+    y_origin = side_sign*(body_joint_clearance/2 + floor_quarter_width/2);
+
     difference() {
-        translate([x_origin,0,floor_z])
-            rounded_box([floor_half_length, chassis_width-6, floor_thickness], 5, true);
+        translate([x_origin,y_origin,floor_z])
+            cube([
+                floor_quarter_length,
+                floor_quarter_width,
+                floor_thickness
+            ], center=true);
 
         // Weight reduction / cable access slots
-        for (xv=[-70,0,70])
-            translate([x_origin+xv,0,floor_z])
-                rounded_box([38,chassis_width-42,floor_thickness+2], 7, true);
+        for (x_offset = [-68, 0, 68])
+            translate([
+                x_origin + x_offset,
+                side_sign*floor_quarter_width*0.58,
+                floor_z
+            ])
+                rounded_box([38, 42, floor_thickness+2], 6, true);
 
-        // Splice holes near centre
-        for (yv=[-70,70])
-            for (xv=[-8,8])
-                translate([xv,yv,floor_z])
-                    cylinder(h=floor_thickness+2,r=2.2,center=true);
+        // Longitudinal seam plates bridge front to rear below each side.
+        for (plate_y = floor_joiner_x_y)
+            if (side_sign*plate_y > 0)
+                for (bolt_y_offset = [-floor_joiner_cross_offset,
+                                       floor_joiner_cross_offset])
+                    translate([
+                        x_sign*floor_joiner_bolt_x[1],
+                        plate_y + bolt_y_offset,
+                        floor_z
+                    ])
+                        cylinder(
+                            h=floor_thickness+2,
+                            d=body_joiner_bolt_d,
+                            center=true
+                        );
+
+        // Transverse seam plates bridge left to right within each body half.
+        for (plate_x = floor_joiner_y_x)
+            if (x_sign*plate_x > 0)
+                for (bolt_x_offset = [-floor_joiner_cross_offset,
+                                       floor_joiner_cross_offset])
+                    translate([
+                        plate_x + bolt_x_offset,
+                        side_sign*floor_joiner_bolt_y[1],
+                        floor_z
+                    ])
+                        cylinder(
+                            h=floor_thickness+2,
+                            d=body_joiner_bolt_d,
+                            center=true
+                        );
+    }
+}
+
+module floor_half(front=true) {
+    // Compatibility selector: both side quarters in one assembled body half.
+    floor_quarter(front, 1);
+    floor_quarter(front, -1);
+}
+
+module body_bulkhead_half(front=true, side_sign=1) {
+    x = (front ? 1 : -1)*abs(body_bulkhead_positions[1]);
+    wall_height = body_bulkhead_top_z - (floor_z + floor_thickness/2);
+    wall_span = chassis_width/2 - body_joint_clearance/2;
+    wall_y = side_sign*(body_joint_clearance/2 + wall_span/2);
+
+    difference() {
+        translate([
+            x,
+            wall_y,
+            floor_z + floor_thickness/2 + wall_height/2
+        ])
+            cube([
+                body_bulkhead_x,
+                wall_span,
+                wall_height
+            ], center=true);
+
+        // Two large windows retain a perimeter web while keeping the wall
+        // support-free when the module is printed floor-down.
+        translate([
+            x,
+            side_sign*chassis_width*0.30,
+            floor_z + floor_thickness/2 + wall_height*0.56
+        ])
+            cube([
+                body_bulkhead_x + 2,
+                chassis_width*0.25,
+                wall_height*0.48
+            ], center=true);
+
+        // A splice plate on the centre-facing side uses four short M4 bolts;
+        // no 214 mm through-rod or trapped nut is required.
+        for (bolt_y = body_bulkhead_bolt_y)
+            if (side_sign*bolt_y > 0)
+                for (bolt_z = body_bulkhead_bolt_z)
+                    translate([x, bolt_y, bolt_z])
+                        cyl_x(
+                            body_bulkhead_x + body_joiner_thickness + 2,
+                            body_joiner_bolt_d/2,
+                            true
+                        );
+    }
+}
+
+module body_floor_rail_rib(front=true, side_sign=1) {
+    x_sign = front ? 1 : -1;
+    rib_start = rail_split_overlap/2 + body_joint_clearance;
+    rib_length = floor_length/2 - rib_start;
+    rib_inner_y = floor_width/2 - 0.5;
+    rib_outer_y = chassis_width/2;
+    rib_width_y = rib_outer_y-rib_inner_y;
+
+    translate([
+        x_sign*(rib_start + rib_length/2),
+        side_sign*(rib_inner_y + rib_width_y/2),
+        floor_z + floor_thickness/2 + 4
+    ])
+        cube([rib_length, rib_width_y, 8], center=true);
+}
+
+module body_module(front=true, side_sign=1) {
+    union() {
+        floor_quarter(front, side_sign);
+        translate([0, side_sign*chassis_width/2, 0])
+            rail_half(front);
+        body_bulkhead_half(front, side_sign);
+        body_floor_rail_rib(front, side_sign);
+    }
+}
+
+module print_oriented_body_module(front=true, side_sign=1) {
+    // Lay the broad outside rail face on the bed. This keeps the floor, rail,
+    // bulkhead, and gusset walls vertical and avoids suspending the floor above
+    // the dropped suspension-pivot lugs.
+    translate([0,0,body_module_outer_y])
+        rotate([-side_sign*90,0,0])
+            body_module(front, side_sign);
+}
+
+module floor_joiner_longitudinal() {
+    difference() {
+        rounded_box([
+            floor_joiner_x_size[0],
+            floor_joiner_x_size[1],
+            body_joiner_thickness
+        ], 3, true);
+        for (x = floor_joiner_bolt_x)
+            for (y = [-floor_joiner_cross_offset,
+                       floor_joiner_cross_offset])
+                translate([x,y,0])
+                    cylinder(
+                        h=body_joiner_thickness+2,
+                        d=body_joiner_bolt_d,
+                        center=true
+                    );
+    }
+}
+
+module floor_joiner_transverse() {
+    difference() {
+        rounded_box([
+            floor_joiner_y_size[0],
+            floor_joiner_y_size[1],
+            body_joiner_thickness
+        ], 3, true);
+        for (x = [-floor_joiner_cross_offset,
+                   floor_joiner_cross_offset])
+            for (y = floor_joiner_bolt_y)
+                translate([x,y,0])
+                    cylinder(
+                        h=body_joiner_thickness+2,
+                        d=body_joiner_bolt_d,
+                        center=true
+                    );
+    }
+}
+
+module bulkhead_joiner_plate() {
+    difference() {
+        cube(bulkhead_joiner_size, center=true);
+        for (y = body_bulkhead_bolt_y)
+            for (z = [-11, 11])
+                translate([0,y,z])
+                    cyl_x(
+                        body_joiner_thickness+2,
+                        body_joiner_bolt_d/2,
+                        true
+                    );
     }
 }
 
@@ -1102,25 +1437,102 @@ module motor_placeholder() {
         cyl_y(motor_length+18, motor_shaft_d/2, true);
 }
 
-module frame_assembly() {
-    rail_y = chassis_width/2;
+module motor_pair(show_shafts=true) {
+    for (side_sign = [-1,1])
+        translate([motor_x,side_sign*motor_y,motor_z])
+            if (show_shafts)
+                motor_placeholder();
+            else
+                cyl_y(motor_length, motor_d/2, true);
+}
 
-    // inner structural rails, split at the middle
-    for (sy=[-1,1]) {
-        translate([0,sy*rail_y,0]) {
-            rail_half(true);
-            rail_half(false);
+module body_joiner_set(include_fasteners=true) {
+    floor_plate_z =
+        floor_z - floor_thickness/2 - body_joiner_thickness/2;
+    bulkhead_plate_z =
+        (body_bulkhead_bolt_z[0] + body_bulkhead_bolt_z[1])/2;
+
+    color(colour_mount) {
+        for (plate_y = floor_joiner_x_y)
+            translate([0,plate_y,floor_plate_z])
+                floor_joiner_longitudinal();
+
+        for (plate_x = floor_joiner_y_x)
+            translate([plate_x,0,floor_plate_z])
+                floor_joiner_transverse();
+
+        for (plate_x = body_bulkhead_positions) {
+            x_sign = plate_x > 0 ? 1 : -1;
+            translate([
+                plate_x - x_sign*(
+                    body_bulkhead_x/2 + body_joiner_thickness/2
+                ),
+                0,
+                bulkhead_plate_z
+            ])
+                bulkhead_joiner_plate();
         }
     }
 
-    // Crossmembers
-    for (cx=[-150,0,150])
-        translate([cx,0,76]) crossmember();
+    if (include_fasteners)
+        color(colour_fastener) {
+            // Vertical floor fasteners through each splice plate and module.
+            for (plate_y = floor_joiner_x_y)
+                for (x = floor_joiner_bolt_x)
+                    for (y_offset = [-floor_joiner_cross_offset,
+                                      floor_joiner_cross_offset])
+                        translate([x,plate_y+y_offset,floor_z-1])
+                            cylinder(h=14,d=4,center=true);
 
+            for (plate_x = floor_joiner_y_x)
+                for (x_offset = [-floor_joiner_cross_offset,
+                                  floor_joiner_cross_offset])
+                    for (y = floor_joiner_bolt_y)
+                        translate([plate_x+x_offset,y,floor_z-1])
+                            cylinder(h=14,d=4,center=true);
+
+            // Transverse bolts clamp the complementary rail-lap layers.
+            for (side_sign = [-1,1])
+                for (x = rail_split_bolt_x)
+                    for (z = rail_split_bolt_z)
+                        translate([x,side_sign*chassis_width/2,z])
+                            cyl_y(rail_thickness+8,2,true);
+
+            // Short bolts secure each bulkhead half to its centre splice plate.
+            for (plate_x = body_bulkhead_positions) {
+                x_sign = plate_x > 0 ? 1 : -1;
+                bolt_x = plate_x - x_sign*2;
+                for (y = body_bulkhead_bolt_y)
+                    for (z = body_bulkhead_bolt_z)
+                        translate([bolt_x,y,z])
+                            cyl_x(
+                                body_bulkhead_x
+                                + body_joiner_thickness
+                                + 6,
+                                2,
+                                true
+                            );
+            }
+        }
+}
+
+module frame_assembly() {
     if (show_floor) {
-        floor_half(true);
-        floor_half(false);
+        color(colour_body_front_left) body_module(true, 1);
+        color(colour_body_front_right) body_module(true, -1);
+        color(colour_body_rear_left) body_module(false, 1);
+        color(colour_body_rear_right) body_module(false, -1);
+    } else {
+        color(colour_frame)
+            for (side_sign = [-1,1])
+                translate([0,side_sign*chassis_width/2,0]) {
+                    rail_half(true);
+                    rail_half(false);
+                }
     }
+
+    if (show_floor && show_body_joiners)
+        body_joiner_set(true);
 }
 
 module running_gear_side(y=0, side_sign=1) {
@@ -1144,16 +1556,15 @@ module assembly() {
     track_centre_y = chassis_width/2 + track_gap + track_width/2;
     explode_y = exploded * 24;
 
-    color(colour_frame) frame_assembly();
+    frame_assembly();
 
     running_gear_side( track_centre_y + explode_y,  1);
     running_gear_side(-track_centre_y - explode_y, -1);
 
     if (show_motor_placeholders) {
-        // Placeholder only: actual gearbox/output arrangement is intentionally
-        // left modular. Motors sit low and inboard near the rear sprockets.
-        translate([-145, chassis_width/2-28, 82]) motor_placeholder();
-        translate([-145,-chassis_width/2+28, 82]) motor_placeholder();
+        // Placeholder only: each motor now occupies its real rear-module
+        // envelope. The offset to the driven cog is reserved for reduction.
+        motor_pair();
     }
 }
 
@@ -1223,8 +1634,10 @@ module suspension_clearance_collision() {
                 translate([
                     suspension_pivot_x[i],
                     arm_y,
-                    support_idler_z
-                ]) christie_arm();
+                    suspension_pivot_z
+                ])
+                    rotate([0, -suspension_nominal_arm_angle, 0])
+                        christie_arm();
                 translate([
                     suspension_spring_x[i],
                     spring_y,
@@ -1266,9 +1679,58 @@ module spring_pivot_clearance_collision() {
         ]) vertical_spring();
 
         union() {
-            translate([pivot_x, arm_y, support_idler_z])
-                christie_arm();
+            translate([pivot_x, arm_y, suspension_pivot_z])
+                rotate([0, -suspension_nominal_arm_angle, 0])
+                    christie_arm();
             spring_upper_fork(spring_x, spring_y, side_sign);
+        }
+    }
+}
+
+module body_module_collision(pair=body_collision_pair) {
+    // Every pair of structural quadrants should meet only at shared faces. The
+    // modelled joint clearance means a correct result is genuinely empty.
+
+    if (pair < 0 || pair == 0)
+        intersection() {
+            body_module(true, 1);
+            body_module(false, 1);
+        }
+    if (pair < 0 || pair == 1)
+        intersection() {
+            body_module(true, -1);
+            body_module(false, -1);
+        }
+    if (pair < 0 || pair == 2)
+        intersection() {
+            body_module(true, 1);
+            body_module(true, -1);
+        }
+    if (pair < 0 || pair == 3)
+        intersection() {
+            body_module(false, 1);
+            body_module(false, -1);
+        }
+    if (pair < 0 || pair == 4)
+        intersection() {
+            body_module(true, 1);
+            body_module(false, -1);
+        }
+    if (pair < 0 || pair == 5)
+        intersection() {
+            body_module(true, -1);
+            body_module(false, 1);
+        }
+}
+
+module motor_body_collision() {
+    intersection() {
+        motor_pair(false);
+        union() {
+            body_module(true, 1);
+            body_module(true, -1);
+            body_module(false, 1);
+            body_module(false, -1);
         }
     }
 }
@@ -1276,16 +1738,23 @@ module spring_pivot_clearance_collision() {
 module dimensions() {
     spacings = track_link_spacings();
     demo_angle = 12;
+    demo_actual_angle = suspension_nominal_arm_angle + demo_angle;
     pickup_length = suspension_arm_length*suspension_pickup_ratio;
-    demo_spring_dx = pickup_length*(1-cos(demo_angle));
+    demo_spring_dx = pickup_length*(
+        cos(suspension_nominal_arm_angle)-cos(demo_actual_angle)
+    );
     demo_spring_dz =
-        spring_height-pickup_length*sin(demo_angle);
+        spring_upper_pivot_z
+        - suspension_pivot_z
+        - pickup_length*sin(demo_actual_angle);
     demo_spring_height =
         sqrt(pow(demo_spring_dx, 2)+pow(demo_spring_dz, 2));
 
     echo("overall_width_mm", overall_width);
     echo("chassis_width_mm", chassis_width);
     echo("track_width_mm", track_width);
+    echo("rear_motor_axis_mm", [motor_x, motor_y, motor_z]);
+    echo("motor_to_drive_axis_offset_xz_mm", motor_to_drive_offset);
     echo("running_gear_drop_mm", running_gear_drop);
     echo("wheelbase_mm", wheelbase);
     echo("approx_overall_length_mm", wheelbase + 2*track_path_radius + track_pitch);
@@ -1318,7 +1787,13 @@ module dimensions() {
     echo("support_idler_axle_z_mm", support_idler_z);
     echo("support_idler_nominal_contact_z_mm", support_idler_z-support_idler_radius);
     echo("suspension_arm_length_mm", suspension_arm_length);
+    echo("suspension_nominal_arm_angle_deg", suspension_nominal_arm_angle);
     echo("suspension_pivot_x_mm", suspension_pivot_x);
+    echo("suspension_pivot_z_mm", suspension_pivot_z);
+    echo(
+        "suspension_pivot_boss_bottom_z_mm",
+        suspension_pivot_z-suspension_pivot_lug_radius
+    );
     echo("suspension_spring_x_mm", suspension_spring_x);
     echo("suspension_spring_pivot_spacing_mm", spring_height);
     echo("suspension_spring_pivot_pin_d_mm", spring_pivot_pin_d);
@@ -1354,15 +1829,37 @@ module dimensions() {
          - spring_eyelet_width/2);
     echo("suspension_demo_arm_angle_deg", demo_angle);
     echo("suspension_demo_wheel_lift_mm",
-         suspension_arm_length*sin(demo_angle));
+         suspension_arm_length*(
+            sin(demo_actual_angle)-sin(suspension_nominal_arm_angle)
+         ));
     echo("suspension_demo_spring_compression_mm",
          spring_height-demo_spring_height);
     echo("suspension_demo_spring_tilt_deg",
          atan2(demo_spring_dx, demo_spring_dz));
     echo("suspension_mount_to_top_track_clearance_mm",
          track_top_z-(spring_mount_z+spring_mount_thickness/2));
-    echo("rail_half_length_mm", rail_length/2 + rail_split_overlap/2);
-    echo("floor_half_size_mm", [floor_half_length,chassis_width-6]);
+    echo("printer_name", printer_name);
+    echo("printer_bed_mm", [printer_bed_x, printer_bed_y, printer_bed_z]);
+    echo("printer_bed_edge_margin_mm", printer_bed_edge_margin);
+    echo("printer_usable_mm", [
+        printer_usable_x,
+        printer_usable_y,
+        printer_usable_z
+    ]);
+    echo("body_module_count", 4);
+    echo("body_module_print_size_mm", body_module_print_size);
+    echo("rail_lap_length_mm", rail_split_overlap);
+    echo("body_joint_clearance_mm", body_joint_clearance);
+    echo("rail_lap_bolt_pattern_mm", [
+        rail_split_bolt_x,
+        rail_split_bolt_z,
+        body_joiner_bolt_d
+    ]);
+    echo("floor_quarter_size_mm", [
+        floor_quarter_length,
+        floor_quarter_width,
+        floor_thickness
+    ]);
 }
 
 // ---------- output ----------
@@ -1399,11 +1896,29 @@ else if (part == "suspension_unit_raised")
         1,
         12
     );
+else if (part == "body_only") frame_assembly();
+else if (part == "body_front_left")
+    color(colour_body_front_left) print_oriented_body_module(true, 1);
+else if (part == "body_front_right")
+    color(colour_body_front_right) print_oriented_body_module(true, -1);
+else if (part == "body_rear_left")
+    color(colour_body_rear_left) print_oriented_body_module(false, 1);
+else if (part == "body_rear_right")
+    color(colour_body_rear_right) print_oriented_body_module(false, -1);
+else if (part == "body_joiner_set") body_joiner_set(true);
+else if (part == "floor_joiner_longitudinal")
+    color(colour_mount) floor_joiner_longitudinal();
+else if (part == "floor_joiner_transverse")
+    color(colour_mount) floor_joiner_transverse();
+else if (part == "bulkhead_joiner_plate")
+    color(colour_mount)
+        rotate([0,90,0]) bulkhead_joiner_plate();
 else if (part == "rail_front") color(colour_frame) rail_half(true);
 else if (part == "rail_rear") color(colour_frame) rail_half(false);
 else if (part == "crossmember") color(colour_frame) crossmember();
 else if (part == "floor_front") color(colour_frame) floor_half(true);
 else if (part == "floor_rear") color(colour_frame) floor_half(false);
+else if (part == "motor_pair") motor_pair();
 else if (part == "motor_plate") color(colour_mount) motor_plate();
 else if (part == "gearbox_plate") color(colour_mount) gearbox_plate();
 else if (part == "drive_collision") drive_collision();
@@ -1415,5 +1930,7 @@ else if (part == "suspension_clearance_collision")
     suspension_clearance_collision();
 else if (part == "spring_pivot_clearance_collision")
     spring_pivot_clearance_collision();
+else if (part == "body_module_collision") body_module_collision();
+else if (part == "motor_body_collision") motor_body_collision();
 else if (part == "dimensions") dimensions();
 else assert(false, str("Unknown part selector: ", part));
