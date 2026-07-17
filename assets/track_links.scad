@@ -8,6 +8,7 @@
   Print orientation: tread up, flat inner pad face on the build plate.
 */
 
+// fn is a special variable to control the number of segments used to generate an arc - A $fn over 128 is not recommended or only for specific circumstances, and below 50 would be advisable for performance.
 $fn = 72;
 
 // link, straight_pair, bent_pair, six_link_plate, cog_reference,
