@@ -28,18 +28,36 @@ $fn = 45;
 
 // ---------- part selector ----------
 part = "assembly";
-// assembly, track_link, sprocket, idler, support_idler,
+// assembly, track_link, sprocket, front_cog, front_cog_assembly,
+// front_cog_mount, shoulder_bolt, bearing_608, support_idler,
 // christie_arm, vertical_spring, spring_upper_fork,
 // suspension_unit, suspension_unit_raised,
 // rail_front, rail_rear, crossmember, floor_front, floor_rear,
-// motor_plate, gearbox_plate, drive_collision, idler_collision,
+// motor_plate, gearbox_plate, drive_collision, front_cog_collision,
+// front_cog_hardware_collision,
 // support_idler_collision, suspension_clearance_collision,
 // spring_pivot_clearance_collision, dimensions
 
 exploded = 0;          // 0 for normal assembly, 1 for mildly exploded
-show_tracks = false;
+show_tracks = true;
 show_motor_placeholders = true;
 show_floor = true;
+
+// ---------- assembly colours ----------
+// These affect previews and review renders only; exported STL geometry is
+// unchanged.
+colour_frame = "#4B5563";
+colour_mount = "#303846";
+colour_track = "#C89B2C";
+colour_drive_cog = "#C44536";
+colour_front_cog = "#6D5BD0";
+colour_road_wheel = "#388C8C";
+colour_suspension_arm = "#E0A11A";
+colour_spring = "#35A854";
+colour_bearing = "#2878D0";
+colour_fastener = "#17191C";
+colour_steel = "#AEB5BE";
+colour_motor = "#555D68";
 
 // ---------- primary envelope ----------
 overall_width = 340;
@@ -76,9 +94,61 @@ crossmember_x = 28;
 crossmember_z = 24;
 crossmember_wall = 3;
 
-main_axle_d = 8.2;
-bearing_od = 22.2;    // 608 bearing slip-fit starting point; tune for material
-bearing_depth = 7.2;
+// ---------- front undriven cog and axle ----------
+// One 608 bearing is pressed into the outer half of each front cog. The
+// shoulder screw enters from outside the track and threads into a captive M6
+// nut in the stationary inboard bracket.
+bearing_608_id = 8;
+bearing_608_od = 22;
+bearing_608_width = 7;
+bearing_od = 22.2;    // 608 bearing seat starting point; tune for material
+bearing_depth = bearing_608_width;
+
+front_cog_relief_d = 12.4;
+front_axle_shoulder_d = 7.95;
+front_axle_shoulder_length = 10;
+front_axle_thread_d = 6;
+front_axle_thread_length = 11.25;
+front_axle_head_d = 13;
+front_axle_head_height = 5.5;
+front_axle_hex_key_af = 4;
+front_axle_washer_thickness = 0.5;
+front_axle_washer_od = 12;
+front_axle_spacer_od = 11.5;
+front_axle_spacer_bore_d = 8.15;
+front_axle_spacer_length =
+    front_axle_shoulder_length
+    - bearing_608_width
+    - front_axle_washer_thickness;
+
+front_mount_gap = track_gap + track_width/2 - rail_thickness/2;
+front_mount_flange_radius = 20;
+front_mount_flange_thickness = 6;
+front_mount_transition_radius = 14;
+front_mount_nose_d = 11.2;
+front_mount_spigot_d = 21.8;
+front_mount_spigot_depth = 3;
+front_mount_bolt_bcd = 32;
+front_mount_bolt_d = 4.4;
+front_mount_rail_boss_radius = 22;
+front_mount_thread_clearance_d = 6.4;
+front_mount_nut_af = 10.4;
+front_mount_nut_thickness = 5.2;
+front_mount_nut_offset = 10.75;
+
+assert(
+    front_axle_spacer_length > 0,
+    "The shoulder must cover the washer, 608 bearing, and inner spacer"
+);
+assert(
+    front_axle_shoulder_d < bearing_608_id,
+    "The shoulder screw must pass through the 608 bearing"
+);
+assert(
+    front_mount_nose_d < front_cog_relief_d,
+    "The stationary front mount must clear the rotating cog relief"
+);
+
 support_idler_axle_d = 5.2;
 support_idler_radius = 35;
 support_idler_width = 14;
@@ -150,7 +220,6 @@ assert(
     "Spring pickup must lie between the suspension pivot and wheel axle"
 );
 
-sprocket_body_radius = sprocket_pitch_radius - 7.5;
 sprocket_width = 14;
 
 motor_d = 42;
@@ -176,6 +245,16 @@ module rounded_box(size=[10,10,10], r=2, center=true) {
 
 module cyl_y(h, r, center=true) {
     rotate([90,0,0]) cylinder(h=h, r=r, center=center);
+}
+
+module hex_prism_y(h, across_flats, center=true) {
+    rotate([90,0,0])
+        cylinder(
+            h=h,
+            r=across_flats/(2*cos(30)),
+            center=center,
+            $fn=6
+        );
 }
 
 module bolt_circle_y(bcd=25, hole_d=3.3, count=4, depth=20, angle_offset=45) {
@@ -259,15 +338,230 @@ module sprocket(phase=0) {
     rotate([0, -phase, 0]) cog_reference();
 }
 
-module idler() {
+module front_cog(side_sign=1) {
+    // The outer 7 mm pocket accepts one 608 bearing. The smaller inner relief
+    // clears the stationary spacer and bracket nose while leaving an annular
+    // shoulder behind the bearing's outer race.
+    difference() {
+        sprocket();
+
+        translate([
+            0,
+            side_sign*(sprocket_width-bearing_depth)/2,
+            0
+        ])
+            cyl_y(bearing_depth + 0.02, bearing_od/2, true);
+
+        translate([
+            0,
+            -side_sign*(sprocket_width-bearing_depth)/2,
+            0
+        ])
+            cyl_y(
+                sprocket_width-bearing_depth + 0.02,
+                front_cog_relief_d/2,
+                true
+            );
+    }
+}
+
+module bearing_608_reference() {
+    color(colour_bearing)
+        difference() {
+            cyl_y(bearing_608_width, bearing_608_od/2, true);
+            cyl_y(bearing_608_width + 1, bearing_608_id/2, true);
+        }
+}
+
+module axle_washer_reference() {
+    difference() {
+        cyl_y(front_axle_washer_thickness, front_axle_washer_od/2, true);
+        cyl_y(
+            front_axle_washer_thickness + 1,
+            front_axle_spacer_bore_d/2,
+            true
+        );
+    }
+}
+
+module inner_race_spacer_reference() {
+    difference() {
+        cyl_y(front_axle_spacer_length, front_axle_spacer_od/2, true);
+        cyl_y(
+            front_axle_spacer_length + 1,
+            front_axle_spacer_bore_d/2,
+            true
+        );
+    }
+}
+
+module shoulder_bolt_reference(side_sign=1) {
+    // The under-head plane is y=0. Positive side_sign places the head toward
+    // +Y and sends the shoulder/thread toward the chassis.
+    color(colour_fastener) {
+        difference() {
+            translate([0, side_sign*front_axle_head_height/2, 0])
+                cyl_y(
+                    front_axle_head_height,
+                    front_axle_head_d/2,
+                    true
+                );
+
+            translate([0, side_sign*(front_axle_head_height-1.5), 0])
+                hex_prism_y(
+                    3.2,
+                    front_axle_hex_key_af,
+                    true
+                );
+        }
+
+        translate([0, -side_sign*front_axle_shoulder_length/2, 0])
+            cyl_y(
+                front_axle_shoulder_length,
+                front_axle_shoulder_d/2,
+                true
+            );
+
+        translate([
+            0,
+            -side_sign*(
+                front_axle_shoulder_length
+                + front_axle_thread_length/2
+            ),
+            0
+        ])
+            cyl_y(
+                front_axle_thread_length,
+                front_axle_thread_d/2,
+                true
+            );
+    }
+}
+
+module m6_nut_reference() {
+    color(colour_fastener)
+        difference() {
+            hex_prism_y(
+                front_mount_nut_thickness,
+                front_mount_nut_af - 0.4,
+                true
+            );
+            cyl_y(
+                front_mount_nut_thickness + 1,
+                front_axle_thread_d/2,
+                true
+            );
+        }
+}
+
+module front_cog_mount(side_sign=1) {
+    rail_face_y = -side_sign*front_mount_gap;
+    flange_y = -side_sign*(
+        front_mount_gap-front_mount_flange_thickness/2
+    );
+    transition_inner_y = -side_sign*(sprocket_width/2 + 1);
+    transition_outer_y = -side_sign*(
+        front_mount_gap-front_mount_flange_thickness
+    );
+    nose_tip_y = -side_sign*front_axle_spacer_length;
+    nose_length = abs(transition_inner_y-nose_tip_y);
+    nose_y = (transition_inner_y+nose_tip_y)/2;
+    spigot_y = -side_sign*(
+        front_mount_gap+front_mount_spigot_depth/2
+    );
+    nut_y = -side_sign*front_mount_nut_offset;
+
     difference() {
         union() {
-            cyl_y(sprocket_width, sprocket_body_radius + 2, true);
-            cyl_y(sprocket_width + 4, 13, true);
+            translate([0, flange_y, 0])
+                cyl_y(
+                    front_mount_flange_thickness,
+                    front_mount_flange_radius,
+                    true
+                );
+
+            hull() {
+                translate([0, transition_outer_y, 0])
+                    cyl_y(1, front_mount_transition_radius, true);
+                translate([0, transition_inner_y, 0])
+                    cyl_y(1, front_mount_transition_radius, true);
+            }
+
+            translate([0, nose_y, 0])
+                cyl_y(nose_length, front_mount_nose_d/2, true);
+
+            // This spigot locates in the former front rail bearing pocket.
+            translate([0, spigot_y, 0])
+                cyl_y(
+                    front_mount_spigot_depth,
+                    front_mount_spigot_d/2,
+                    true
+                );
         }
-        cyl_y(sprocket_width + 8, main_axle_d/2, true);
-        lightening_holes_y((sprocket_body_radius+2)*0.58, 5.5, 6, sprocket_width+5);
+
+        // Clearance for the M6 thread between the shoulder and captive nut.
+        translate([0, rail_face_y/2, 0])
+            cyl_y(
+                abs(rail_face_y) + 10,
+                front_mount_thread_clearance_d/2,
+                true
+            );
+
+        translate([0, flange_y, 0])
+            bolt_circle_y(
+                front_mount_bolt_bcd,
+                front_mount_bolt_d,
+                4,
+                front_mount_flange_thickness
+                + front_mount_spigot_depth
+                + 4,
+                45
+            );
+
+        // Top-loading captive-nut pocket. The rail-side flange prevents the
+        // nut from escaping once the bracket is installed.
+        translate([0, nut_y, 0])
+            hex_prism_y(
+                front_mount_nut_thickness + 0.4,
+                front_mount_nut_af,
+                true
+            );
+        translate([0, nut_y, front_mount_transition_radius/2])
+            cube([
+                front_mount_nut_af,
+                front_mount_nut_thickness + 0.4,
+                front_mount_transition_radius
+            ], center=true);
     }
+}
+
+module front_axle_hardware(side_sign=1) {
+    bearing_y = side_sign*(sprocket_width/2-bearing_608_width/2);
+    washer_y = side_sign*(
+        sprocket_width/2+front_axle_washer_thickness/2
+    );
+    spacer_y = -side_sign*front_axle_spacer_length/2;
+    under_head_y = side_sign*(
+        sprocket_width/2+front_axle_washer_thickness
+    );
+    nut_y = -side_sign*front_mount_nut_offset;
+
+    translate([0, bearing_y, 0]) bearing_608_reference();
+
+    color(colour_steel) {
+        translate([0, washer_y, 0]) axle_washer_reference();
+        translate([0, spacer_y, 0]) inner_race_spacer_reference();
+    }
+
+    translate([0, under_head_y, 0])
+        shoulder_bolt_reference(side_sign);
+    translate([0, nut_y, 0]) m6_nut_reference();
+}
+
+module front_cog_assembly(side_sign=1) {
+    color(colour_front_cog) front_cog(side_sign);
+    color(colour_mount) front_cog_mount(side_sign);
+    front_axle_hardware(side_sign);
 }
 
 module support_idler() {
@@ -520,13 +814,13 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
     spring_y = arm_y - side_sign*suspension_spring_inboard_offset;
     rail_y = side_sign*chassis_width/2;
 
-    color("#8ffe09")
+    color(colour_suspension_arm)
         translate([pivot_x, arm_y, support_idler_z])
             rotate([0, -arm_angle, 0])
                 christie_arm();
 
     // Pivot shaft bridges the hull rail to the inboard face of the arm.
-    color("silver")
+    color(colour_fastener)
         translate([
             pivot_x,
             (rail_y+arm_y)/2,
@@ -541,7 +835,7 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
     // Wheel axle bridges the arm and the complete road wheel hub.
     wheel_axle_end_y =
         y + side_sign*(support_idler_width/2 + 2);
-    color("silver")
+    color(colour_fastener)
         translate([
             moving_wheel_x,
             (arm_y+wheel_axle_end_y)/2,
@@ -554,7 +848,7 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
             );
 
     // Cross-pin carries the vertical spring load into the arm pickup.
-    color("silver")
+    color(colour_fastener)
         translate([
             lower_pivot_x,
             (arm_y+spring_y)/2,
@@ -569,12 +863,12 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
                 true
             );
 
-    color("lightgray")
+    color(colour_spring)
         translate([lower_pivot_x, spring_y, lower_pivot_z])
             rotate([0, spring_tilt, 0])
                 vertical_spring(moving_spring_height);
 
-    color("slategray")
+    color(colour_mount)
         spring_upper_fork(upper_pivot_x, spring_y, side_sign);
 
     upper_pin_length =
@@ -584,7 +878,7 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
             + spring_fork_ear_thickness
             + spring_fork_pin_overhang
         );
-    color("silver")
+    color(colour_fastener)
         translate([upper_pivot_x, spring_y, spring_upper_pivot_z])
             cyl_y(
                 upper_pin_length,
@@ -592,7 +886,7 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
                 true
             );
 
-    color("orange")
+    color(colour_road_wheel)
         translate([moving_wheel_x, y, moving_wheel_z])
             rotate([0, -arm_angle, 0])
                 support_idler();
@@ -658,12 +952,32 @@ module rail_half(front=true) {
                             rail_thickness,
                             rail_height
                         ], center=true);
+
+            // The front cog bracket bolts to a reinforced rail boss. The
+            // former 608 pocket remains as a locating socket for its spigot.
+            if (front)
+                translate([wheelbase/2, 0, axle_z])
+                    cyl_y(
+                        rail_thickness,
+                        front_mount_rail_boss_radius,
+                        true
+                    );
         }
 
-        // Main sprocket/idler bearing pocket at the relevant outer end.
+        // Rear: drive-shaft bearing pocket. Front: bracket locating socket.
         end_x = x_sign * wheelbase/2;
         translate([end_x,0,axle_z])
             cyl_y(rail_thickness+2, bearing_od/2, true);
+
+        if (front)
+            translate([wheelbase/2, 0, axle_z])
+                bolt_circle_y(
+                    front_mount_bolt_bcd,
+                    front_mount_bolt_d,
+                    4,
+                    rail_thickness + 2,
+                    45
+                );
 
         // Christie-arm pivot bores in the lower structural web.
         for (pivot_x = suspension_pivot_x)
@@ -782,9 +1096,9 @@ module gearbox_plate() {
 }
 
 module motor_placeholder() {
-    color("dimgray")
+    color(colour_motor)
         cyl_y(motor_length, motor_d/2, true);
-    color("silver")
+    color(colour_steel)
         cyl_y(motor_length+18, motor_shaft_d/2, true);
 }
 
@@ -810,10 +1124,12 @@ module frame_assembly() {
 }
 
 module running_gear_side(y=0, side_sign=1) {
-    // rear drive sprocket, front idler
-    translate([-wheelbase/2,y,axle_z])
-        sprocket();
-    translate([ wheelbase/2,y,axle_z]) idler();
+    // Rear drive cog and matching front free-spinning cog.
+    color(colour_drive_cog)
+        translate([-wheelbase/2,y,axle_z])
+            sprocket();
+    translate([wheelbase/2,y,axle_z])
+        front_cog_assembly(side_sign);
 
     // Three independent horizontal-arm Christie suspension units. Each spring
     // acts vertically between its arm pickup and the hull's upper rail web.
@@ -821,19 +1137,17 @@ module running_gear_side(y=0, side_sign=1) {
         christie_suspension_unit(wheel_x, y, side_sign);
 
     if (show_tracks)
-        track_loop(y);
+        color(colour_track) track_loop(y);
 }
 
 module assembly() {
     track_centre_y = chassis_width/2 + track_gap + track_width/2;
     explode_y = exploded * 24;
 
-    color("slategray") frame_assembly();
+    color(colour_frame) frame_assembly();
 
-    color("orange") {
-        running_gear_side( track_centre_y + explode_y,  1);
-        running_gear_side(-track_centre_y - explode_y, -1);
-    }
+    running_gear_side( track_centre_y + explode_y,  1);
+    running_gear_side(-track_centre_y - explode_y, -1);
 
     if (show_motor_placeholders) {
         // Placeholder only: actual gearbox/output arrangement is intentionally
@@ -854,14 +1168,24 @@ module drive_collision() {
     }
 }
 
-module idler_collision() {
+module front_cog_collision() {
     intersection() {
         translate([wheelbase/2, 0, axle_z])
-            idler();
+            front_cog(1);
         union()
             // Bottom transition, six front-wrap links, and upper transition.
             for (index = [12, 13, 14, 15, 16, 17, 18, 19])
                 positioned_track_link(index, 0);
+    }
+}
+
+module front_cog_hardware_collision() {
+    intersection() {
+        front_cog(1);
+        union() {
+            front_cog_mount(1);
+            front_axle_hardware(1);
+        }
     }
 }
 
@@ -911,7 +1235,8 @@ module suspension_clearance_collision() {
         // Nearby fixed/mating geometry. A correct result has no volume.
         union() {
             translate([-wheelbase/2, track_y, axle_z]) sprocket();
-            translate([ wheelbase/2, track_y, axle_z]) idler();
+            translate([wheelbase/2, track_y, axle_z])
+                front_cog_assembly(side_sign);
             for (wheel_x = support_idler_x)
                 translate([wheel_x, track_y, support_idler_z])
                     support_idler();
@@ -967,6 +1292,27 @@ module dimensions() {
     echo("sprocket_pitch_diameter_mm", 2*sprocket_pitch_radius);
     echo("track_links_per_side", len(track_link_centres()));
     echo("track_link_spacing_range_mm", [min(spacings), max(spacings)]);
+    echo("front_cog_bearing_mm", [
+        bearing_608_id,
+        bearing_608_od,
+        bearing_608_width
+    ]);
+    echo("front_cog_bearing_seat_d_mm", bearing_od);
+    echo("front_axle_shoulder_d_mm", front_axle_shoulder_d);
+    echo("front_axle_shoulder_length_mm", front_axle_shoulder_length);
+    echo("front_axle_thread_mm", [
+        front_axle_thread_d,
+        front_axle_thread_length
+    ]);
+    echo("front_axle_stack_mm", [
+        front_axle_washer_thickness,
+        bearing_608_width,
+        front_axle_spacer_length
+    ]);
+    echo("front_mount_bolt_pattern_mm", [
+        front_mount_bolt_bcd,
+        front_mount_bolt_d
+    ]);
     echo("support_idlers_per_side", len(support_idler_x));
     echo("support_idler_x_mm", support_idler_x);
     echo("support_idler_axle_z_mm", support_idler_z);
@@ -1021,20 +1367,29 @@ module dimensions() {
 
 // ---------- output ----------
 if (part == "assembly") assembly();
-else if (part == "track_link") track_link();
-else if (part == "sprocket") sprocket();
-else if (part == "idler") idler();
-else if (part == "support_idler") support_idler();
-else if (part == "christie_arm") christie_arm();
-else if (part == "vertical_spring") vertical_spring();
+else if (part == "track_link") color(colour_track) track_link();
+else if (part == "sprocket") color(colour_drive_cog) sprocket();
+else if (part == "front_cog") color(colour_front_cog) front_cog(1);
+else if (part == "front_cog_assembly") front_cog_assembly(1);
+else if (part == "front_cog_mount")
+    color(colour_mount) front_cog_mount(1);
+else if (part == "shoulder_bolt") shoulder_bolt_reference(1);
+else if (part == "bearing_608") bearing_608_reference();
+else if (part == "support_idler")
+    color(colour_road_wheel) support_idler();
+else if (part == "christie_arm")
+    color(colour_suspension_arm) christie_arm();
+else if (part == "vertical_spring")
+    color(colour_spring) vertical_spring();
 else if (part == "spring_upper_fork")
-    spring_upper_fork(
-        0,
-        overall_width/2-track_width/2
-        - suspension_arm_inboard_offset
-        - suspension_spring_inboard_offset,
-        1
-    );
+    color(colour_mount)
+        spring_upper_fork(
+            0,
+            overall_width/2-track_width/2
+            - suspension_arm_inboard_offset
+            - suspension_spring_inboard_offset,
+            1
+        );
 else if (part == "suspension_unit")
     christie_suspension_unit(0, overall_width/2-track_width/2, 1);
 else if (part == "suspension_unit_raised")
@@ -1044,15 +1399,17 @@ else if (part == "suspension_unit_raised")
         1,
         12
     );
-else if (part == "rail_front") rail_half(true);
-else if (part == "rail_rear") rail_half(false);
-else if (part == "crossmember") crossmember();
-else if (part == "floor_front") floor_half(true);
-else if (part == "floor_rear") floor_half(false);
-else if (part == "motor_plate") motor_plate();
-else if (part == "gearbox_plate") gearbox_plate();
+else if (part == "rail_front") color(colour_frame) rail_half(true);
+else if (part == "rail_rear") color(colour_frame) rail_half(false);
+else if (part == "crossmember") color(colour_frame) crossmember();
+else if (part == "floor_front") color(colour_frame) floor_half(true);
+else if (part == "floor_rear") color(colour_frame) floor_half(false);
+else if (part == "motor_plate") color(colour_mount) motor_plate();
+else if (part == "gearbox_plate") color(colour_mount) gearbox_plate();
 else if (part == "drive_collision") drive_collision();
-else if (part == "idler_collision") idler_collision();
+else if (part == "front_cog_collision") front_cog_collision();
+else if (part == "front_cog_hardware_collision")
+    front_cog_hardware_collision();
 else if (part == "support_idler_collision") support_idler_collision();
 else if (part == "suspension_clearance_collision")
     suspension_clearance_collision();

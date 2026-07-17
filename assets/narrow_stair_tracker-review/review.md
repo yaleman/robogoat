@@ -2,88 +2,99 @@
 
 ## Outcome
 
-The new pinned track link and matching tapered-tooth cog are integrated into the
-340 x 526 mm chassis model. The assembly now displays the actual printable link
-geometry instead of rectangular placeholders, with 37 links per side following
-the 30 mm, 11-tooth pitch path. The complete running-gear pod is 15 mm lower
-relative to the chassis, and the upper spring mounts and lowered arm pivots now
-have dedicated rail reinforcement.
+Both smooth front idlers have been replaced by tooth-matched, free-spinning
+front cogs. Each front cog uses one 608 bearing and the specified 7.95 mm x
+10 mm shoulder screw, with a stationary spacer and captive M6 nut in a new
+rail-mounted bracket. The rear drive cog geometry is unchanged, so the cog
+printed before this revision remains usable at the driven end.
 
-The model is suitable for the next physical prototype gate: two links first,
-then six to eight links wrapped around the printed cog. It is not yet a finished
-stair-climbing drivetrain.
+The model is ready for a single-side physical fit prototype. It is not yet
+validated for stair-impact loads.
 
 ## Checks completed
 
-- The full assembly compiles in OpenSCAD.
-- All five assembly viewpoints were regenerated as full OpenSCAD geometry
-  renders from the final model hash and inspected for visible discontinuities.
-- Every adjacent link centre is 30.000 to 30.077 mm apart.
-- The rear cog/link intersection fixture is empty.
-- The front idler/link intersection fixture is empty.
-- Three support idlers per side are centred on their tracks at x = -110, 0, and
-  +110 mm.
-- The support idler tangent and lower track wheel-side face both sit at
-  z = 3.758 mm. Their axles sit at z = 38.758 mm. Exact tangency produces only
-  a zero-area shared edge; with the
-  fixture's 0.01 mm tangent allowance, the volumetric intersection is empty.
-- The end-wheel axes, track loop, road wheels, arms, springs, and upper forks
-  all move down by the same 15 mm, preserving the link pitch path and the
-  sprocket engagement geometry.
-- Every road wheel is carried by a 55 mm horizontal Christie arm with a vertical
-  spring pickup at a 0.60 motion ratio.
-- The three arm pivots are at x = -165, -55, and +55 mm; the spring axes are at
-  x = -132, -22, and +88 mm.
-- Static clearances are 3 mm arm-to-wheel, 1 mm arm-to-hub, 1.5 mm
-  spring-cap-to-rail, 7 mm spring-cap-to-wheel, and 2.242 mm
-  upper-mount-to-top-track.
-- The suspension-clearance intersection fixture is empty after adding the
-  intentional 1 mm arm-to-hub gap.
-- Every lowered arm pivot is surrounded by a 12 mm-radius lug hulled back into
-  the rail's lower web.
-- Each spring has integral 4.4 mm-bore eyelets on 4 mm pins. The lower eyelet is
-  pinned beside the bellcrank; the upper eyelet sits between two fork ears with
-  0.5 mm axial clearance per side.
-- Every upper fork has a 14 mm-wide vertical gusset, two M4 rail bolts on
-  13.5 mm centres, and an 18 mm-wide full-height solid rail column behind it.
-- The spring-pivot clearance fixture is empty. It checks the spring and eyelets
-  against the arm and fork without including the intended pins.
-- At the 12-degree raised-wheel demonstration state, the wheel rises 11.435 mm,
-  the spring compresses 6.856 mm, and the two pivots permit 0.837 degrees of
-  spring tilt.
-- The standalone link is one connected printable solid.
-- Straight and 32.727-degree articulated link-pair collision fixtures are empty.
-- The cog teeth taper from an 8 mm tangential root to a 5 mm tip, giving angled
-  entry and exit faces in both drive directions.
+- The full assembly and all new selectors compile in OpenSCAD 2026.06.12.
+- Full top, left, bottom, right, and isometric renders were generated and
+  inspected for the complete tracked assembly, front cog assembly, printable
+  front cog, printable mount bracket, and modified front rail.
+- Both front wheels use the same 11-tooth, 30 mm-pitch, tapered-tooth geometry
+  as the rear cog. The printed rear cog geometry was not changed.
+- The front cog/track collision fixture is empty for all eight links around the
+  front wrap.
+- The front cog/stationary-hardware collision fixture is empty.
+- The rear cog/link, support-idler/track, suspension-clearance, and
+  spring-pivot-clearance fixtures remain empty.
+- The 608 reference dimensions are 8 mm ID x 22 mm OD x 7 mm wide. The printed
+  seat is 22.2 mm diameter x 7 mm deep as a starting fit.
+- The modelled shoulder is 7.95 mm diameter x 10 mm long. Its stack is exactly
+  0.5 mm inner-race washer + 7 mm bearing + 2.5 mm spacer = 10 mm.
+- The shoulder ends at the stationary bracket nose. Only the M6 thread enters
+  the bracket and captive nut; the thread is not used as a bearing surface.
+- The front cog has a 12.4 mm stationary-hardware relief around an 11.2 mm
+  bracket nose and 11.5 mm spacer.
+- The bracket spans the 30.5 mm track-to-rail gap with a tapered 28 mm-diameter
+  body and a 40 mm-diameter rail flange.
+- The bracket's 21.8 mm locating spigot fits the rail's existing 22.2 mm front
+  socket. Four 4.4 mm clearance holes on a 32 mm bolt circle align with the
+  modified rail.
+- The front rail has a 44 mm-diameter solid boss around the locating socket and
+  four bracket fasteners.
+- Visual review initially exposed the bracket holes being cut at the model
+  origin rather than through its flange. Their cut position was corrected and
+  all five bracket views were regenerated before the final render pass.
+- The printable `front_cog` STL exports as a manifold object with 383 vertices
+  and 754 facets.
+- The printable `front_cog_mount` STL exports as a manifold object with 951
+  vertices and 1,922 facets.
+- Existing dimensions remain unchanged: 340 mm overall width, 390 mm
+  wheelbase, 37 links per side, three 70 mm Christie road wheels per side, and
+  the 15 mm running-gear drop.
+
+## Visible review findings
+
+- Left/right assembly views show a toothed cog at both ends of each track and a
+  shoulder-bolt head only on each undriven front cog.
+- Front-cog opposing views show the outer 608 pocket and the smaller inner
+  stationary-hardware relief on opposite faces.
+- Bracket opposing views show all four through-holes, the central M6 clearance
+  bore, the rail spigot, and the top-loading captive-nut slot.
+- Front-rail opposing views show the matching four-hole pattern and reinforced
+  boss without removing the existing locating socket.
+- No disconnected solids, missing holes, left/right mirroring errors, or
+  visible rotating/stationary overlaps remain in the reviewed selectors.
 
 ## Remaining physical checks
 
-1. Confirm a 3 mm metal pin fits the printed 3.4 mm bores without binding or
-   excessive play.
-2. Turn a six-to-eight-link cog wrap by hand in both directions and inspect tooth
-   entry, release, and lateral clearance.
-3. Add positive pin retention before running a complete track.
-4. Select real steel spring rates, preload, dampers/guides, bump stops, and wheel
-   travel from the measured vehicle mass and stair-impact loads. The modeled
-   coils are only geometry envelopes.
-5. Validate the cantilevered arm, pivot, hub, and axle loads; the current model
-   establishes packaging and motion geometry, not structural capacity.
-6. Select pivot bushings, washers, pin retention, and fork material after wear
-   testing a printed lower and upper joint under representative side load.
-7. Load-test the reinforced upper mount with both M4 bolts installed. Inspect
-   the vertical gusset, rail column, dropped pivot lug, and print layer
-   orientation before relying on them for stair impacts.
-8. Add an adjustable front idler or another tensioning method; its position is
-   currently fixed.
-9. Add lateral guidance or guide horns if the track can walk off the wheels.
-10. Replace the placeholder motor/gearbox interface with a bearing-supported,
-   reduced drive sized for the selected motor and vehicle mass.
+1. Measure the delivered shoulder screw. The 7.95 mm shoulder diameter, 10 mm
+   shoulder length, and M6 x 1.0 thread are user-specified; the 13 x 5.5 mm head
+   and 11.25 mm thread length are ISO 7379 reference envelopes and must be
+   confirmed against the actual product.
+2. Print one front cog only. Tune the 22.2 mm bearing seat for the chosen
+   filament and printer profile before producing the second cog.
+3. Use a metal 0.5 mm washer and 2.5 mm inner-race spacer. Confirm neither part
+   touches a bearing shield or the rotating printed cog.
+4. Hand-turn the cog under radial and side load. A single 608 bearing fits the
+   10 mm shoulder constraint, but its real tilt, clearance, and impact life
+   cannot be established from the CAD model.
+5. Print one bracket and fit the captive M6 nut before mounting it. Check that
+   the top slot retains the nut during assembly and leaves tool access.
+6. Install all four M4 bracket fasteners and load the axle vertically and
+   laterally. Inspect the 11.2 mm nose, nut pocket, tapered body, 44 mm rail
+   boss, and layer lines for flex or cracking.
+7. Wrap six to eight links around the front cog and rotate it in both
+   directions. Check tooth entry, release, lateral window clearance, and track
+   retention with the shoulder screw fully tightened.
+8. Add an adjustable tensioning method; the front bracket position remains
+   fixed.
+9. Validate spring rate, damping, bump stops, track pins, the rear drive axle,
+   and gearbox reduction before powered stair testing.
 
 ## Fit-to-purpose judgment
 
-The link, cog, lowered Christie suspension packaging, and reinforced mount
-geometry are credible for printing and bench-fit testing. The overall chassis
-remains a layout prototype: stair use should wait until spring rate, preload,
-damping, bump stops, arm, lug, rail-mount and axle load capacity, pin retention,
-track tension, lateral guidance, and the reduction drive have been resolved and
-tested under load.
+The new front cog and axle stack are coherent for printing and bench-fit
+testing: track engagement is positive at both ends, the shoulder rather than
+the M6 thread carries the bearing, and the bracket load path reaches a
+reinforced rail boss. The main remaining risks are the single-bearing moment
+load, printed bracket nose and captive-nut strength, actual bolt dimensions,
+bearing-seat tolerance, and the lack of track tension adjustment. Resolve
+those with one physical front assembly before printing the second side.
