@@ -37,7 +37,7 @@ part = "assembly";
 // spring_pivot_clearance_collision, dimensions
 
 exploded = 0;          // 0 for normal assembly, 1 for mildly exploded
-show_tracks = true;
+show_tracks = false;
 show_motor_placeholders = true;
 show_floor = true;
 
@@ -55,7 +55,9 @@ sprocket_pitch_radius = track_pitch / (2 * sin(180 / sprocket_teeth)); // chord-
 
 // Printable link and drive-cog dimensions are defined in track_links.scad.
 
-axle_z = 72;
+running_gear_drop = 15;
+nominal_axle_z = 72;
+axle_z = nominal_axle_z - running_gear_drop;
 track_path_radius = sprocket_pitch_radius;
 track_bottom_z = axle_z - track_path_radius;
 track_top_z = axle_z + track_path_radius;
@@ -119,7 +121,7 @@ spring_eyelet_neck_height = 8;
 spring_pivot_pin_d = 4;
 spring_pivot_bore_d = 4.4;
 spring_lower_pivot_z = support_idler_z;
-spring_upper_pivot_z = 110;
+spring_upper_pivot_z = 110 - running_gear_drop;
 spring_height = spring_upper_pivot_z - spring_lower_pivot_z;
 spring_mount_width = 18;
 spring_mount_thickness = 5;
@@ -127,6 +129,13 @@ spring_fork_outer_radius = 7;
 spring_fork_ear_thickness = 3;
 spring_fork_clearance = 0.5;
 spring_fork_pin_overhang = 1;
+spring_mount_rib_width = 14;
+spring_mount_rib_clearance = 0.5;
+spring_mount_rib_bottom_z =
+    spring_upper_pivot_z - spring_fork_outer_radius + 1;
+spring_mount_lower_bolt_z = spring_upper_pivot_z - 3;
+spring_rail_rib_width = 18;
+suspension_pivot_lug_radius = 12;
 spring_mount_bottom_z =
     spring_upper_pivot_z + spring_fork_outer_radius + 1;
 spring_mount_z = spring_mount_bottom_z + spring_mount_thickness/2;
@@ -150,8 +159,12 @@ motor_shaft_d = 8;
 
 // ---------- helpers ----------
 module rounded_rect_2d(size=[10,10], r=2) {
-    offset(r=r)
-        offset(delta=-r)
+    effective_r = min(r, min(size)/2 - 0.01);
+
+    assert(effective_r > 0, "Rounded rectangle is too small for its radius");
+
+    offset(r=effective_r)
+        offset(delta=-effective_r)
             square(size, center=true);
 }
 
@@ -411,18 +424,43 @@ module spring_upper_fork(spring_x, spring_y, side_sign) {
         + spring_fork_ear_thickness;
     mount_y = (spring_y+rail_y)/2;
     ear_stem_height = spring_mount_bottom_z-spring_upper_pivot_z;
+    near_ear_y = spring_y - side_sign*ear_offset;
+    rib_outboard_y =
+        near_ear_y
+        - side_sign*(spring_fork_ear_thickness/2 + spring_mount_rib_clearance);
+    rib_span = abs(rib_outboard_y-rail_y);
+    rib_y = (rail_y+rib_outboard_y)/2;
+    rib_height =
+        spring_mount_z + spring_mount_thickness/2
+        - spring_mount_rib_bottom_z;
 
     difference() {
-        translate([spring_x, mount_y, spring_mount_z])
-            cube([
-                spring_mount_width,
-                mount_span,
-                spring_mount_thickness
-            ], center=true);
+        union() {
+            translate([spring_x, mount_y, spring_mount_z])
+                cube([
+                    spring_mount_width,
+                    mount_span,
+                    spring_mount_thickness
+                ], center=true);
 
-        // M4 cross-bolt into the rail's upper web.
-        translate([spring_x, rail_y, spring_mount_z])
-            cyl_y(mount_span+4, 2.2, true);
+            // Thick vertical gusset transfers the fork load into the rail-side
+            // mounting face instead of leaving the top beam in pure bending.
+            translate([
+                spring_x,
+                rib_y,
+                spring_mount_rib_bottom_z + rib_height/2
+            ])
+                cube([
+                    spring_mount_rib_width,
+                    rib_span,
+                    rib_height
+                ], center=true);
+        }
+
+        // Two M4 cross-bolts prevent the bracket rotating on the rail rib.
+        for (bolt_z = [spring_mount_lower_bolt_z, spring_mount_z])
+            translate([spring_x, rail_y, bolt_z])
+                cyl_y(mount_span+4, 2.2, true);
     }
 
     for (ear_side = [-1, 1]) {
@@ -482,7 +520,7 @@ module christie_suspension_unit(wheel_x, y, side_sign, arm_angle=0) {
     spring_y = arm_y - side_sign*suspension_spring_inboard_offset;
     rail_y = side_sign*chassis_width/2;
 
-    color("firebrick")
+    color("#8ffe09")
         translate([pivot_x, arm_y, support_idler_z])
             rotate([0, -arm_angle, 0])
                 christie_arm();
@@ -578,7 +616,49 @@ module rail_half(front=true) {
     x_origin = x_sign * (rail_length/4 - rail_split_overlap/4);
 
     difference() {
-        translate([x_origin,0,0]) rail_blank(half_len);
+        union() {
+            translate([x_origin,0,0]) rail_blank(half_len);
+
+            // Dropped bosses keep the lowered arm pivots tied into the lower
+            // rail web instead of leaving their axes below the frame.
+            for (pivot_x = suspension_pivot_x)
+                if ((front && pivot_x >= -rail_split_overlap/2) ||
+                    (!front && pivot_x <= rail_split_overlap/2))
+                    hull() {
+                        translate([
+                            pivot_x,
+                            0,
+                            rail_bottom_z + suspension_pivot_lug_radius
+                        ])
+                            cyl_y(
+                                rail_thickness,
+                                suspension_pivot_lug_radius,
+                                true
+                            );
+                        translate([pivot_x,0,support_idler_z])
+                            cyl_y(
+                                rail_thickness,
+                                suspension_pivot_lug_radius,
+                                true
+                            );
+                    }
+
+            // A full-height solid column behind every upper fork gives both
+            // mount bolts real material and ties the load into both rail webs.
+            for (spring_x = suspension_spring_x)
+                if ((front && spring_x >= -rail_split_overlap/2) ||
+                    (!front && spring_x <= rail_split_overlap/2))
+                    translate([
+                        spring_x,
+                        0,
+                        rail_bottom_z + rail_height/2
+                    ])
+                        cube([
+                            spring_rail_rib_width,
+                            rail_thickness,
+                            rail_height
+                        ], center=true);
+        }
 
         // Main sprocket/idler bearing pocket at the relevant outer end.
         end_x = x_sign * wheelbase/2;
@@ -596,16 +676,13 @@ module rail_half(front=true) {
                         true
                     );
 
-        // Spring-mount cross-bolts in the upper structural web.
+        // Twin spring-mount cross-bolts through the vertical rail ribs.
         for (spring_x = suspension_spring_x)
             if ((front && spring_x >= -rail_split_overlap/2) ||
                 (!front && spring_x <= rail_split_overlap/2))
-                translate([
-                    spring_x,
-                    0,
-                    spring_mount_z
-                ])
-                    cyl_y(rail_thickness+2, 2.2, true);
+                for (bolt_z = [spring_mount_lower_bolt_z, spring_mount_z])
+                    translate([spring_x,0,bolt_z])
+                        cyl_y(rail_thickness+2, 2.2, true);
 
         // Crossmember bolt holes
         for (cx = [-150, 0, 150])
@@ -884,6 +961,7 @@ module dimensions() {
     echo("overall_width_mm", overall_width);
     echo("chassis_width_mm", chassis_width);
     echo("track_width_mm", track_width);
+    echo("running_gear_drop_mm", running_gear_drop);
     echo("wheelbase_mm", wheelbase);
     echo("approx_overall_length_mm", wheelbase + 2*track_path_radius + track_pitch);
     echo("sprocket_pitch_diameter_mm", 2*sprocket_pitch_radius);
@@ -899,6 +977,11 @@ module dimensions() {
     echo("suspension_spring_pivot_spacing_mm", spring_height);
     echo("suspension_spring_pivot_pin_d_mm", spring_pivot_pin_d);
     echo("suspension_spring_pivot_bore_d_mm", spring_pivot_bore_d);
+    echo("suspension_mount_rib_width_mm", spring_mount_rib_width);
+    echo("suspension_rail_rib_width_mm", spring_rail_rib_width);
+    echo("suspension_mount_bolt_spacing_mm",
+         spring_mount_z-spring_mount_lower_bolt_z);
+    echo("suspension_pivot_lug_radius_mm", suspension_pivot_lug_radius);
     echo("suspension_spring_motion_ratio", suspension_pickup_ratio);
     echo("suspension_arm_to_wheel_clearance_mm",
          suspension_arm_inboard_offset

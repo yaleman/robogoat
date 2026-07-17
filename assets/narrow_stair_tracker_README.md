@@ -38,8 +38,14 @@ The integrated system uses:
 
 Each track now has three 70 mm-diameter support idlers at longitudinal positions
 -110, 0, and +110 mm. Every idler is centred across the 55 mm track width. Their
-axles sit at z = 53.758 mm, placing the wheel tangent at z = 18.758 mm against
+axles sit at z = 38.758 mm, placing the wheel tangent at z = 3.758 mm against
 the wheel-side face of the straight lower track run.
+
+The complete running-gear pod is 15 mm lower than the original layout. This
+includes both end-wheel axes, the track loop, all three road wheels, the arms,
+springs, and upper spring forks. Moving the complete pitch path keeps the 30 mm
+link spacing and the sprocket-to-track relationship unchanged while increasing
+the track's downward reach relative to the chassis.
 
 Each road wheel is carried by an independent Christie-style suspension unit:
 
@@ -51,7 +57,10 @@ Each road wheel is carried by an independent Christie-style suspension unit:
 - integral upper spring eyelet captured by a double-shear fork
 - 4 mm removable pivot pins in 4.4 mm eyelet and fork bores
 - 56.242 mm nominal eyelet-centre spacing
-- fork bracket cross-bolted through the rail's upper structural web
+- 14 mm-wide vertical fork gusset carrying spring load back to the rail
+- two M4 fork-bracket bolts on 13.5 mm vertical centres
+- 18 mm-wide full-height rail column behind each upper spring mount
+- 12 mm-radius dropped rail lug around every lowered arm pivot
 
 When a wheel rises, its arm rotates upward about the hull pivot. The intermediate
 pickup rises by 60% of the wheel's small-angle travel and compresses the vertical
@@ -67,7 +76,9 @@ fixed upper eyelet throughout that state.
 The arms sit immediately inboard of the wheels. The springs sit between the arms
 and hull rails. Nominal static clearances are 3 mm arm-to-wheel, 1 mm
 arm-to-hub, 0.5 mm lower-eyelet-to-arm, 1.5 mm spring-cap-to-rail, 7 mm
-spring-cap-to-wheel, and 2.242 mm between the upper mount and top track.
+spring-cap-to-wheel, and 2.242 mm between the upper mount and top track. The
+15 mm pod drop does not reduce that top-track clearance because the upper mount
+and complete track path move together.
 
 The coil and central guide in the model are an **envelope and motion reference**,
 not a printable load-bearing spring. Use a real steel compression spring with a
@@ -99,7 +110,7 @@ tangent allowance.
 The default parts are split so their nominal XY footprints fit within a
 256 x 256 mm bed:
 
-- Rail half: approximately 235 x 86 mm when laid flat
+- Rail half: approximately 235 x 102 mm when laid flat
 - Floor half: 230 x 208 mm
 - Crossmember: 214 x 28 mm
 - Sprocket/idler: under 120 mm diameter
@@ -161,7 +172,10 @@ Do these before printing a complete set:
    track pod.
 7. Test one lower and upper pivot with the intended 4 mm pins, washers/bushings,
    and retainers. Confirm free rotation without visible eyelet or fork slop.
-8. Weigh the completed robot and calculate the spring rate, preload, damping,
+8. Fit both M4 upper-mount bolts with washers and locknuts, then load one fork in
+   the wheel-travel direction. Inspect the fork gusset, rail column, dropped
+   pivot lug, and layer lines for cracking or permanent movement.
+9. Weigh the completed robot and calculate the spring rate, preload, damping,
    bump stop, and maximum arm angle before powered stair testing.
 
 ## Materials
@@ -208,5 +222,12 @@ and whether the rear sprocket axle can remain where it is.
   compresses and tilts the spring between its two pivot centres.
 - Replaced the former wheel-axle rail holes with lower arm-pivot bores and added
   upper spring-mount cross-bolt holes.
+- Lowered the complete track and suspension pod by 15 mm while retaining the
+  original link pitch and suspension travel geometry.
+- Added dropped rail lugs around the lower arm pivots.
+- Reinforced each upper spring mount with a 14 mm vertical gusset, twin M4
+  cross-bolts, and an 18 mm full-height rail column.
+- Clamped rounded-rectangle corner radii to valid geometry so narrow rail and
+  plate features render consistently in current OpenSCAD builds.
 - Updated the assembly dimensions and prototype instructions to match the new
   track system.

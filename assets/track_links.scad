@@ -14,7 +14,7 @@ $fn = 72;
 // link, straight_pair, bent_pair, six_link_plate, cog_reference,
 // cog_engagement, dimensions, straight_collision, bend_collision,
 // cog_collision, pin_reference
-part = "link";
+part = "cog_engagement";
 
 // ---------- primary parameters ----------
 track_width = 55;
@@ -230,7 +230,6 @@ module cog_reference() {
     pitch_radius = pitch / (2 * sin(180 / design_sprocket_teeth));
     tooth_centre_radius = pitch_radius - reference_tooth_inset;
     body_radius = pitch_radius - reference_cog_body_inset;
-
     difference() {
         union() {
             rotate([90, 0, 0])

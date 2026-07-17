@@ -1,126 +1,126 @@
 {
   "model": "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad",
-  "model_sha256": "fdf88cf6bfce096fe80596e7f187af711e1880edebb667847d8483ab1a92135a",
-  "openscad": "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+  "model_sha256": "4f5b2520b0dcb31cc07e0144e0bfa8583934fc0230be3239bd174a2be362879b",
+  "openscad": "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
   "size": [
-    1000,
-    750
+    1200,
+    900
   ],
   "projection": "orthographic",
   "mode": "render",
   "defines": [
-    "$fn=12"
+    "$fn=18"
   ],
   "results": [
     {
       "view": "top",
       "image": "top.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,0,0,0,100",
-        "--imgsize=1000,750",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
         "-D",
-        "$fn=12",
+        "$fn=18",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/top.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:14.094\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 319\nGeometry cache size in bytes: 1000088\nCGAL Polyhedrons in cache: 281\nCGAL cache size in bytes: 57058250\nTotal rendering time: 0:00:00.434\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      324\n   Vertices:    38210\n   Facets:      77712"
     },
     {
       "view": "left",
       "image": "left.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,90,0,0,100",
-        "--imgsize=1000,750",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
         "-D",
-        "$fn=12",
+        "$fn=18",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/left.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:12.543\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 319\nGeometry cache size in bytes: 1000088\nCGAL Polyhedrons in cache: 281\nCGAL cache size in bytes: 57058250\nTotal rendering time: 0:00:00.433\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      324\n   Vertices:    38210\n   Facets:      77712"
     },
     {
       "view": "bottom",
       "image": "bottom.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,180,0,0,100",
-        "--imgsize=1000,750",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
         "-D",
-        "$fn=12",
+        "$fn=18",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/bottom.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:11.025\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 319\nGeometry cache size in bytes: 1000088\nCGAL Polyhedrons in cache: 281\nCGAL cache size in bytes: 57058250\nTotal rendering time: 0:00:00.438\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      324\n   Vertices:    38210\n   Facets:      77712"
     },
     {
       "view": "right",
       "image": "right.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,90,0,180,100",
-        "--imgsize=1000,750",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
         "-D",
-        "$fn=12",
+        "$fn=18",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/right.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:12.217\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 319\nGeometry cache size in bytes: 1000088\nCGAL Polyhedrons in cache: 281\nCGAL cache size in bytes: 57058250\nTotal rendering time: 0:00:00.461\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      324\n   Vertices:    38210\n   Facets:      77712"
     },
     {
       "view": "isometric",
       "image": "isometric.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,55,0,25,100",
-        "--imgsize=1000,750",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
         "-D",
-        "$fn=12",
+        "$fn=18",
         "-o",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker-review/isometric.png",
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 289\nGeometry cache size in bytes: 718880\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 98597856\nTotal rendering time: 0:03:15.089\n   Top level object is a 3D object:\n   Simple:         no\n   Vertices:    24712\n   Halfedges:   89480\n   Edges:       44740\n   Halffacets:  40564\n   Facets:      20282\n   Volumes:       137\nWARNING: Object may not be a valid 2-manifold and may need repair!"
+      "output": "Geometries in cache: 319\nGeometry cache size in bytes: 1000088\nCGAL Polyhedrons in cache: 281\nCGAL cache size in bytes: 57058250\nTotal rendering time: 0:00:00.419\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      324\n   Vertices:    38210\n   Facets:      77712"
     }
   ]
 }

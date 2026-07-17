@@ -1,10 +1,10 @@
 {
   "model": "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad",
-  "model_sha256": "fdf88cf6bfce096fe80596e7f187af711e1880edebb667847d8483ab1a92135a",
-  "openscad": "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+  "model_sha256": "4f5b2520b0dcb31cc07e0144e0bfa8583934fc0230be3239bd174a2be362879b",
+  "openscad": "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
   "size": [
-    800,
-    600
+    1200,
+    900
   ],
   "projection": "orthographic",
   "mode": "render",
@@ -17,12 +17,12 @@
       "view": "top",
       "image": "top.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,0,0,0,100",
-        "--imgsize=800,600",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
@@ -35,18 +35,18 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 16\nGeometry cache size in bytes: 43328\nCGAL Polyhedrons in cache: 7\nCGAL cache size in bytes: 866336\nTotal rendering time: 0:00:01.141\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      212\n   Halfedges:     636\n   Edges:         318\n   Halffacets:    220\n   Facets:        110\n   Volumes:         2"
+      "output": "Geometries in cache: 19\nGeometry cache size in bytes: 56584\nCGAL Polyhedrons in cache: 9\nCGAL cache size in bytes: 216000\nTotal rendering time: 0:00:00.125\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      3\n   Vertices:      268\n   Facets:        544"
     },
     {
       "view": "left",
       "image": "left.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,90,0,0,100",
-        "--imgsize=800,600",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
@@ -59,18 +59,18 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 16\nGeometry cache size in bytes: 43328\nCGAL Polyhedrons in cache: 7\nCGAL cache size in bytes: 866336\nTotal rendering time: 0:00:01.036\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      212\n   Halfedges:     636\n   Edges:         318\n   Halffacets:    220\n   Facets:        110\n   Volumes:         2"
+      "output": "Geometries in cache: 19\nGeometry cache size in bytes: 56584\nCGAL Polyhedrons in cache: 9\nCGAL cache size in bytes: 216000\nTotal rendering time: 0:00:00.126\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      3\n   Vertices:      268\n   Facets:        544"
     },
     {
       "view": "bottom",
       "image": "bottom.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,180,0,0,100",
-        "--imgsize=800,600",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
@@ -83,18 +83,18 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 16\nGeometry cache size in bytes: 43328\nCGAL Polyhedrons in cache: 7\nCGAL cache size in bytes: 866336\nTotal rendering time: 0:00:01.016\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      212\n   Halfedges:     636\n   Edges:         318\n   Halffacets:    220\n   Facets:        110\n   Volumes:         2"
+      "output": "Geometries in cache: 19\nGeometry cache size in bytes: 56584\nCGAL Polyhedrons in cache: 9\nCGAL cache size in bytes: 216000\nTotal rendering time: 0:00:00.128\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      3\n   Vertices:      268\n   Facets:        544"
     },
     {
       "view": "right",
       "image": "right.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,90,0,180,100",
-        "--imgsize=800,600",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
@@ -107,18 +107,18 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 16\nGeometry cache size in bytes: 43328\nCGAL Polyhedrons in cache: 7\nCGAL cache size in bytes: 866336\nTotal rendering time: 0:00:01.023\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      212\n   Halfedges:     636\n   Edges:         318\n   Halffacets:    220\n   Facets:        110\n   Volumes:         2"
+      "output": "Geometries in cache: 19\nGeometry cache size in bytes: 56584\nCGAL Polyhedrons in cache: 9\nCGAL cache size in bytes: 216000\nTotal rendering time: 0:00:00.130\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      3\n   Vertices:      268\n   Facets:        544"
     },
     {
       "view": "isometric",
       "image": "isometric.png",
       "command": [
-        "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD",
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "--autocenter",
         "--viewall",
         "--projection=ortho",
         "--camera=0,0,0,55,0,25,100",
-        "--imgsize=800,600",
+        "--imgsize=1200,900",
         "--colorscheme=Tomorrow",
         "--view=edges",
         "--render=true",
@@ -131,7 +131,7 @@
         "/Users/yaleman/Projects/robogoat/assets/narrow_stair_tracker.scad"
       ],
       "return_code": 0,
-      "output": "Geometries in cache: 16\nGeometry cache size in bytes: 43328\nCGAL Polyhedrons in cache: 7\nCGAL cache size in bytes: 866336\nTotal rendering time: 0:00:01.063\n   Top level object is a 3D object:\n   Simple:        yes\n   Vertices:      212\n   Halfedges:     636\n   Edges:         318\n   Halffacets:    220\n   Facets:        110\n   Volumes:         2"
+      "output": "Geometries in cache: 19\nGeometry cache size in bytes: 56584\nCGAL Polyhedrons in cache: 9\nCGAL cache size in bytes: 216000\nTotal rendering time: 0:00:00.171\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      3\n   Vertices:      268\n   Facets:        544"
     }
   ]
 }
