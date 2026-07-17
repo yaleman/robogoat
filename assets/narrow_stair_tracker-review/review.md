@@ -29,7 +29,7 @@ yet validated for stair-impact loads.
   four print-oriented body modules, and the body joiner system.
 - All four body modules and all three splice-plate types export as manifold
   STLs. The maximum body-module print envelope is approximately
-  245 x 101.242 x 111.85 mm.
+  245 x 86 x 111.85 mm.
 - The body-module collision fixture is empty for all six module pairings. The
   new 0.3 mm rail, floor, and bulkhead seam clearances remove coplanar printed
   fits and impossible shared volume.
@@ -40,6 +40,9 @@ yet validated for stair-impact loads.
 - The front cog/stationary-hardware collision fixture is empty.
 - The rear cog/link, support-idler/track, suspension-clearance, and
   spring-pivot-clearance fixtures remain empty.
+- The three arm-pivot boss bottoms are flush with each rail plate at z = 42 mm.
+  The road-wheel line remains at z = 38.758 mm, producing a -16.089 degree
+  neutral swing-arm angle without moving the tracks.
 - The motor-body/body collision fixture is empty. Each 42 x 48 mm motor
   envelope has 2 mm nominal clearance from the rear bulkhead and inner rail,
   plus 3 mm above the floor.

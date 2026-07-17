@@ -18,7 +18,7 @@ has not been physically load-tested and is not yet validated for stair impacts.
   giving an asserted 250 x 250 x 250 mm usable envelope.
 - Each body selector automatically lays the outer rail face on the bed.
 - The maximum body-module print envelope is approximately
-  245 x 101.242 x 111.85 mm.
+  245 x 86 x 111.85 mm.
 - Full top, left, bottom, right, and isometric renders were inspected for the
   assembled body, complete tracker, all four print-oriented body modules, and
   the positioned joiner set.
@@ -44,6 +44,8 @@ has not been physically load-tested and is not yet validated for stair impacts.
   transverse bulkhead, and rail-to-floor rib rise vertically from that face.
 - Opposing module views retain all rail-lap, floor-plate, suspension, spring,
   and front-cog bracket holes.
+- The circular suspension bosses finish flush with the rail bottom instead of
+  extending below the module.
 - No disconnected solids, missing faces, mirrored-hole errors, or visible
   module-to-module penetration remain in the reviewed geometry.
 

@@ -237,7 +237,7 @@ spring_cap_thickness = 3;
 spring_guide_d = 4;
 spring_eyelet_outer_radius = 6;
 spring_eyelet_width = 6;
-spring_eyelet_neck_height = 8;
+spring_eyelet_neck_height = 10;
 spring_pivot_pin_d = 4;
 spring_pivot_bore_d = 4.4;
 spring_lower_pivot_z =
@@ -1326,8 +1326,8 @@ module body_module(front=true, side_sign=1) {
 
 module print_oriented_body_module(front=true, side_sign=1) {
     // Lay the broad outside rail face on the bed. This keeps the floor, rail,
-    // bulkhead, and gusset walls vertical and avoids suspending the floor above
-    // the dropped suspension-pivot lugs.
+    // bulkhead, and gusset walls vertical. The suspension bosses now finish at
+    // the same lower edge as the rail plate.
     translate([0,0,body_module_outer_y])
         rotate([-side_sign*90,0,0])
             body_module(front, side_sign);

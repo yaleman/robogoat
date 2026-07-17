@@ -43,10 +43,10 @@ robot left is +Y:
 
 Each selector automatically rotates its module onto the broad outside rail
 face for export and slicing. The maximum print-oriented envelope is
-approximately **245 x 101.2 x 111.9 mm**, inside the shared 250 mm usable
+approximately **245 x 86 x 111.9 mm**, inside the shared 250 mm usable
 envelope. This orientation keeps the floor, outer rail, transverse bulkhead,
-and floor-to-rail rib vertical instead of suspending the floor above the
-dropped suspension lugs.
+and floor-to-rail rib vertical. The raised suspension bosses no longer extend
+below the rail plate.
 
 The four modules have a modelled 0.3 mm joint clearance. They are joined by:
 
@@ -144,11 +144,11 @@ Each track now has three 70 mm-diameter support idlers at longitudinal positions
 axles sit at z = 38.758 mm, placing the wheel tangent at z = 3.758 mm against
 the wheel-side face of the straight lower track run.
 
-The complete running-gear pod is 15 mm lower than the original layout. This
-includes both end-wheel axes, the track loop, all three road wheels, the arms,
-springs, and upper spring forks. Moving the complete pitch path keeps the 30 mm
-link spacing and the sprocket-to-track relationship unchanged while increasing
-the track's downward reach relative to the chassis.
+The end-wheel axes, track loop, and three road wheels remain 15 mm lower than
+the original layout. Moving the complete pitch path keeps the 30 mm link
+spacing and sprocket-to-track relationship unchanged. The arm pivots are then
+raised independently to the rail-bottom line, so the tracks retain their
+downward reach without low-hanging pivot bosses.
 
 Each road wheel is carried by an independent Christie-style suspension unit:
 
@@ -159,7 +159,7 @@ Each road wheel is carried by an independent Christie-style suspension unit:
 - integral lower spring eyelet pinned beside the arm pickup
 - integral upper spring eyelet captured by a double-shear fork
 - 4 mm removable pivot pins in 4.4 mm eyelet and fork bores
-- 56.242 mm nominal eyelet-centre spacing
+- 50.145 mm nominal eyelet-centre spacing
 - 14 mm-wide vertical fork gusset carrying spring load back to the rail
 - two M4 fork-bracket bolts on 13.5 mm vertical centres
 - 18 mm-wide full-height rail column behind each upper spring mount
@@ -177,9 +177,9 @@ body to tilt as the arm pickup follows its arc. The neutral model keeps the thre
 wheels tangent to the straight lower track run.
 
 The `suspension_unit_raised` selector demonstrates 12 degrees of upward arm
-rotation: 11.435 mm wheel lift, 6.856 mm spring compression, and 0.837 degrees of
-spring tilt. The spring remains connected between the moving lower eyelet and
-fixed upper eyelet throughout that state.
+rotation from neutral: 11.320 mm wheel lift, 6.775 mm spring compression, and
+1.597 degrees of spring tilt. The spring remains connected between the moving
+lower eyelet and fixed upper eyelet throughout that state.
 
 The arms sit immediately inboard of the wheels. The springs sit between the arms
 and hull rails. Nominal static clearances are 3 mm arm-to-wheel, 1 mm
@@ -197,7 +197,7 @@ The loop is generated from link-centre positions around the pitch circle. The
 reported adjacent-centre spacing is 30.000 to 30.077 mm; the small maximum
 variation occurs at a straight-to-wrap transition.
 
-Seven diagnostic selectors are available:
+Eight diagnostic selectors are available:
 
 - `drive_collision`: cog against the seven links around the rear drive wrap
 - `front_cog_collision`: bearing cog against the eight links around the front
@@ -213,8 +213,9 @@ Seven diagnostic selectors are available:
   and upper fork, excluding their intended pins
 - `body_module_collision`: all six pairings of the four structural body
   quadrants; the 0.3 mm seam clearances mean the expected result is empty
+- `motor_body_collision`: both motor cans against all four body modules
 
-All seven are expected to render as an empty object. A non-empty result means
+All eight are expected to render as an empty object. A non-empty result means
 that one of the checked components has solid interference beyond the documented
 tangent allowance.
 
@@ -222,7 +223,7 @@ tangent allowance.
 
 The default parts are checked against the shared printer envelope:
 
-- Body quadrant: approximately 245 x 101.2 mm in its export orientation
+- Body quadrant: approximately 245 x 86 mm in its export orientation
 - Longitudinal floor plate: 64 x 30 mm
 - Transverse floor plate: 30 x 64 mm
 - Bulkhead plate: 50 x 42 mm in its export orientation
@@ -374,7 +375,7 @@ and whether the rear sprocket axle can remain where it is.
 - Added pitch-spacing output and separate drive-cog and idler collision fixtures.
 - Replaced the four road wheels with three track-centred lower-run support idlers
   per side and moved their axle height to nominal track contact.
-- Mounted each road wheel on a horizontal Christie arm with an inboard vertical
+- Mounted each road wheel on a Christie arm with an inboard vertical
   spring, guide, upper rail bracket, pivot shaft, wheel axle, and spring cross-pin.
 - Replaced the fixed spring seats with integral eyelets at both ends, a lower
   arm cross-pin, and an upper double-shear fork and pin.
@@ -384,7 +385,9 @@ and whether the rear sprocket axle can remain where it is.
   upper spring-mount cross-bolt holes.
 - Lowered the complete track and suspension pod by 15 mm while retaining the
   original link pitch and suspension travel geometry.
-- Added dropped rail lugs around the lower arm pivots.
+- Raised the arm pivots and circular rail bosses until the boss bottoms are
+  flush with the rail plates, while retaining the lowered road-wheel line with
+  angled neutral swing arms.
 - Reinforced each upper spring mount with a 14 mm vertical gusset, twin M4
   cross-bolts, and an 18 mm full-height rail column.
 - Replaced both smooth front idlers with tooth-matched front cogs so both ends
