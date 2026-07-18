@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RoboGoat drivetrain calculator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23b8f34a%22/><path d=%22M7 19h18v6H7zm3-9h12l3 7H7z%22 fill=%22%230b0c0d%22/></svg>">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">TRACKED ROBOT FEASIBILITY</div>
+      <h1>Will this thing climb?</h1>
+    </header>
+
+    <div class="layout">
+      <form id="calculator" novalidate>
+        <section>
+          <h2>Platform</h2>
+          <div class="fields two-col">
+            <label>Driven sprocket diameter <span class="unit">mm</span><input id="sprocket_diameter_mm" type="number" min="0.1" step="0.1" value="106.5"></label>
+            <label>Robot mass <span class="unit">kg</span><input id="robot_mass_kg" type="number" min="0.1" step="0.1" value="18"></label>
+            <label>Incline <span class="unit">degrees</span><input id="incline_deg" type="number" min="0" max="90" step="1" value="35"></label>
+            <label>Number of motors<input id="motor_count" type="number" min="1" step="1" value="2"></label>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-heading">
+            <h2>Gearing</h2>
+            <div class="segmented" role="group" aria-label="Gear input type">
+              <button type="button" class="active" data-group="gear" data-value="direct">Ratio</button>
+              <button type="button" data-group="gear" data-value="teeth">Teeth</button>
+            </div>
+          </div>
+          <div id="gear-direct" class="fields">
+            <label>Total reduction <span class="hint">motor rev : sprocket rev</span><input id="reduction_ratio" type="number" min="0.01" step="0.1" value="96"></label>
+          </div>
+          <div id="gear-teeth" class="fields two-col hidden">
+            <label>Motor gear teeth<input id="motor_teeth" type="number" min="1" step="1" value="20"></label>
+            <label>Driven gear teeth<input id="driven_teeth" type="number" min="1" step="1" value="1920"></label>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-heading stack-mobile">
+            <h2>Motor data <span class="hint">per motor</span></h2>
+            <div class="segmented" role="group" aria-label="Motor data type">
+              <button type="button" class="active" data-group="motor" data-value="mechanical">Mechanical</button>
+              <button type="button" data-group="motor" data-value="dc">DC curve</button>
+            </div>
+          </div>
+          <div id="motor-mechanical">
+            <div class="inline-choice">
+              <label><input type="radio" name="mechanical-kind" value="power" checked> Rated power</label>
+              <label><input type="radio" name="mechanical-kind" value="torque"> Rated torque</label>
+            </div>
+            <div class="fields two-col">
+              <label>Loaded speed <span class="unit">RPM</span><input id="loaded_rpm" type="number" min="0.1" step="100" value="12000"></label>
+              <label id="power-field">Mechanical power <span class="unit">W</span><input id="power_w" type="number" min="0.1" step="1" value="100"></label>
+              <label id="torque-field" class="hidden">Rated torque <span class="unit">N·m</span><input id="torque_nm" type="number" min="0.0001" step="0.001" value="0.08"></label>
+            </div>
+          </div>
+          <div id="motor-dc" class="fields two-col hidden">
+            <label>Rated voltage <span class="unit">V</span><input id="voltage_v" type="number" min="0.1" step="0.1" value="12"></label>
+            <label>No-load speed <span class="unit">RPM</span><input id="no_load_rpm" type="number" min="0.1" step="100" value="16000"></label>
+            <label>No-load current <span class="unit">A</span><input id="no_load_current_a" type="number" min="0" step="0.1" value="1.2"></label>
+            <label>Stall torque <span class="unit">N·m</span><input id="stall_torque_nm" type="number" min="0.0001" step="0.01" value="0.45"></label>
+            <label>Stall current <span class="unit">A</span><input id="stall_current_a" type="number" min="0.1" step="0.1" value="35"></label>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-heading stack-mobile">
+            <h2>Real-world allowances</h2>
+            <div class="segmented" role="group" aria-label="Track contact model">
+              <button type="button" class="active" data-group="traction" data-value="engagement">Stair engagement</button>
+              <button type="button" data-group="traction" data-value="friction">Friction only</button>
+            </div>
+          </div>
+          <div class="fields three-col">
+            <label>Drivetrain efficiency <span class="unit">%</span><input id="drivetrain_efficiency" type="number" min="1" max="100" step="1" value="70"></label>
+            <label>Rolling resistance <span class="hint">coefficient</span><input id="rolling_resistance" type="number" min="0" max="2" step="0.01" value="0.08"></label>
+            <label id="traction-field" class="hidden">Track traction <span class="hint">coefficient</span><input id="traction_coefficient" type="number" min="0.01" max="5" step="0.05" value="0.6"></label>
+          </div>
+        </section>
+        <div id="form-error" class="form-error hidden" role="alert"></div>
+      </form>
+
+      <aside id="results" aria-live="polite">
+        <div class="result-header">
+          <span id="status-dot" class="status-dot"></span>
+          <div><div class="eyebrow">ASSESSMENT</div><h2 id="status">Calculating…</h2></div>
+        </div>
+        <div class="hero-result">
+          <span class="label">Sustainable speed</span>
+          <strong id="sustainable_speed_kmh">—</strong><span class="hero-unit">km/h</span>
+          <small id="sustainable_speed_mps">— m/s</small>
+        </div>
+        <div class="meter-block">
+          <div class="meter-label"><span>Power budget</span><strong id="power_budget_percent">—</strong></div>
+          <div class="meter"><span id="power-meter"></span></div>
+          <small id="power-detail">—</small>
+        </div>
+        <dl class="results-grid">
+          <div><dt>Configured speed</dt><dd id="theoretical_speed_kmh">—</dd></div>
+          <div><dt>Max incline</dt><dd id="maximum_incline_deg">—</dd></div>
+          <div><dt>Drive force</dt><dd id="force">—</dd></div>
+          <div><dt>Wheel torque</dt><dd id="required_wheel_torque_nm">—</dd></div>
+          <div><dt>Motor torque</dt><dd id="motor-torque">—</dd></div>
+          <div id="current-result" class="hidden"><dt>Total current</dt><dd id="estimated_total_current_a">—</dd></div>
+          <div><dt>Total reduction</dt><dd id="result-ratio">—</dd></div>
+          <div><dt>Limiting factor</dt><dd id="limiting_factor">—</dd></div>
+        </dl>
+        <div id="warnings" class="warnings"></div>
+        <details>
+          <summary>What this estimate leaves out</summary>
+          <p>Stair-edge impacts, acceleration, track deformation, motor cooling, battery voltage sag and structural strength. Treat the result as a direction finder, then validate with current limits and physical tests.</p>
+        </details>
+      </aside>
+    </div>
+  </main>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

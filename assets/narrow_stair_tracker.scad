@@ -24,6 +24,7 @@
 
 include <printer_config.scad>
 use <track_links.scad>
+use <parametric_herringbone_gearbox.scad>
 
 $fn = 45;
 
@@ -38,16 +39,23 @@ part = "assembly";
 // floor_joiner_longitudinal, floor_joiner_transverse,
 // bulkhead_joiner_plate,
 // rail_front, rail_rear, crossmember, floor_front, floor_rear,
-// motor_pair, motor_plate, gearbox_plate,
+// drive_unit_left, drive_unit_right, drive_unit_pair, motor_540,
+// final_drive_gears, final_drive_pinion, final_drive_axle_gear,
+// gearbox_saddle,
+// gearbox_front_plate_left, gearbox_rear_plate_left,
+// gearbox_front_plate_right, gearbox_rear_plate_right,
 // drive_collision, front_cog_collision,
 // front_cog_hardware_collision,
 // support_idler_collision, suspension_clearance_collision,
 // spring_pivot_clearance_collision, body_module_collision,
-// motor_body_collision, dimensions
+// drivetrain_body_collision, drivetrain_pair_collision,
+// final_drive_body_collision, final_drive_mesh_collision,
+// drive_axle_gearbox_collision, internal_gear_collision,
+// gearbox_standoff_collision, gearbox_shaft_collision, dimensions
 
 exploded = 0;          // 0 for normal assembly, 1 for mildly exploded
 show_tracks = true;
-show_motor_placeholders = true;
+show_drive_units = true;
 show_floor = true;
 show_body_joiners = true;
 body_collision_pair = -1; // -1 checks every pair; 0..5 isolates one seam
@@ -67,6 +75,7 @@ colour_bearing = "#2878D0";
 colour_fastener = "#17191C";
 colour_steel = "#AEB5BE";
 colour_motor = "#555D68";
+colour_final_drive = "#A855F7";
 colour_body_front_left = "#526D82";
 colour_body_front_right = "#607A67";
 colour_body_rear_left = "#705D7D";
@@ -119,7 +128,9 @@ crossmember_wall = 3;
 // determines whether that leaves enough usable bed area.
 body_bulkhead_x = 8;
 body_bulkhead_top_z = 94;
-body_bulkhead_positions = [-150, 150];
+// The rear transverse bulkhead is deliberately omitted so the drivetrain can
+// sit lower. The front wall remains as the body-half cross brace.
+body_bulkhead_positions = [150];
 body_bulkhead_bolt_y = [-15, 15];
 body_bulkhead_bolt_z = [62, 84];
 
@@ -301,49 +312,70 @@ assert(
 
 sprocket_width = 14;
 
-// ---------- rear drive motors ----------
-// The motor axes sit inside the rear body modules, parallel to the driven-cog
-// axles. They are deliberately offset above and forward of the cog axes so a
-// compact reduction stage can connect them; a 300 KV outrunner must not drive
-// the track cog directly.
-motor_d = 42;
-motor_length = 48;
-motor_shaft_d = 8;
-motor_body_clearance = 2;
-motor_floor_clearance = 3;
-motor_x =
-    body_bulkhead_positions[0]
-    - body_bulkhead_x/2
-    - motor_body_clearance
-    - motor_d/2;
-motor_y =
+// ---------- integrated rear drivetrains ----------
+// Each lowered gearbox output drives the rear cog axle through a gear pair in
+// the dedicated bay between its rear plate and the rail. Keeping that axle out
+// of the housing prevents it crossing any internal gear.
+gearbox_axial_width = 49.4;
+gearbox_motor_length = 50;
+gearbox_motor_d = 35.8;
+gearbox_body_clearance = 1;
+final_drive_axial_clearance = 0.5;
+final_drive_width = final_drive_gear_width();
+gearbox_plate_bottom_offset = gearbox_output_to_plate_bottom(false);
+gearbox_output_z = axle_z + final_drive_centre_distance();
+gearbox_plate_bottom_z = gearbox_output_z - gearbox_plate_bottom_offset;
+gearbox_floor_top_z = floor_z + floor_thickness/2;
+gearbox_floor_gap = gearbox_plate_bottom_z - gearbox_floor_top_z;
+gearbox_front_face_y =
     chassis_width/2
     - rail_thickness/2
-    - motor_body_clearance
-    - motor_length/2;
-motor_z =
-    floor_z
-    + floor_thickness/2
-    + motor_floor_clearance
-    + motor_d/2;
-motor_to_drive_offset = [
-    motor_x + wheelbase/2,
-    motor_z - axle_z
-];
+    - 2*final_drive_axial_clearance
+    - final_drive_width
+    - gearbox_axial_width;
+gearbox_motor_centre_gap =
+    2*(gearbox_front_face_y-gearbox_motor_length);
+gearbox_motor_axial_overlap = max(0,-gearbox_motor_centre_gap);
+drive_mount_bcd = 32;
+drive_mount_bolt_d = 4.4;
+drive_shaft_d = 8;
+drive_shaft_clearance_d = 8.2;
+drive_shaft_outer_overhang = 2;
+final_drive_y =
+    gearbox_front_face_y
+    + gearbox_axial_width
+    + final_drive_axial_clearance
+    + final_drive_width/2;
+gearbox_saddle_x = [-210, -65];
+gearbox_saddle_x_length = 28;
+gearbox_saddle_y_length = 8;
+gearbox_saddle_height = 6;
+gearbox_saddle_plate_clearance = 0.4;
+gearbox_saddle_bolt_d = 4.4;
 
 assert(
-    motor_x + motor_d/2
-        <= body_bulkhead_positions[0] - body_bulkhead_x/2,
-    "Rear motors overlap the body bulkhead"
+    motor_layout_radial_clearance() >= 4,
+    "Staggered 540 motor cans need at least 4 mm radial clearance"
 );
 assert(
-    motor_z - motor_d/2 >= floor_z + floor_thickness/2,
-    "Rear motors overlap the floor"
+    gearbox_axial_width + gearbox_motor_length
+        < chassis_width/2 - rail_thickness/2,
+    "A gearbox and 540 motor do not fit inside one chassis half"
 );
 assert(
-    motor_y + motor_length/2
-        <= chassis_width/2 - rail_thickness/2,
-    "Rear motors overlap the inside rail face"
+    abs(
+        gearbox_output_to_plate_bottom(false)
+        - gearbox_output_to_plate_bottom(true)
+    ) < 0.01,
+    "Both gearbox layouts must share the baseplate datum"
+);
+assert(
+    abs(gearbox_output_z-axle_z-final_drive_centre_distance()) < 0.01,
+    "The lowered gearbox output must mesh with the final drive axle gear"
+);
+assert(
+    gearbox_floor_gap >= 0 && gearbox_floor_gap <= 0.5,
+    "The gearbox plate must sit within 0.5 mm of the baseplate"
 );
 
 // ---------- helpers ----------
@@ -1071,6 +1103,16 @@ module rail_complete() {
                     front_mount_rail_boss_radius,
                     true
                 );
+
+            // The rear cog's final drive axle runs in a 608 bearing here. Four
+            // bolts retain its carrier so track tension is reacted by the rail
+            // instead of the gearbox output bearings.
+            translate([-wheelbase/2, 0, axle_z])
+                cyl_y(
+                    rail_thickness,
+                    front_mount_rail_boss_radius,
+                    true
+                );
         }
 
         // Rear drive-shaft pocket and front bracket locating socket.
@@ -1082,6 +1124,15 @@ module rail_complete() {
             bolt_circle_y(
                 front_mount_bolt_bcd,
                 front_mount_bolt_d,
+                4,
+                rail_thickness + 2,
+                45
+            );
+
+        translate([-wheelbase/2, 0, axle_z])
+            bolt_circle_y(
+                drive_mount_bcd,
+                drive_mount_bolt_d,
                 4,
                 rail_thickness + 2,
                 45
@@ -1254,7 +1305,7 @@ module floor_half(front=true) {
 }
 
 module body_bulkhead_half(front=true, side_sign=1) {
-    x = (front ? 1 : -1)*abs(body_bulkhead_positions[1]);
+    x = (front ? 1 : -1)*abs(body_bulkhead_positions[0]);
     wall_height = body_bulkhead_top_z - (floor_z + floor_thickness/2);
     wall_span = chassis_width/2 - body_joint_clearance/2;
     wall_y = side_sign*(body_joint_clearance/2 + wall_span/2);
@@ -1316,11 +1367,23 @@ module body_floor_rail_rib(front=true, side_sign=1) {
 
 module body_module(front=true, side_sign=1) {
     union() {
-        floor_quarter(front, side_sign);
         translate([0, side_sign*chassis_width/2, 0])
             rail_half(front);
-        body_bulkhead_half(front, side_sign);
-        body_floor_rail_rib(front, side_sign);
+
+        // The gearbox becomes a structural cross brace over the rear floor.
+        // The rear transverse wall is omitted so the drivetrain can sit lower;
+        // the outer rail retains its bearing boss and four-bolt mount.
+        difference() {
+            union() {
+                floor_quarter(front, side_sign);
+                if (front)
+                    body_bulkhead_half(true, side_sign);
+                body_floor_rail_rib(front, side_sign);
+            }
+            gearbox_body_clearance(side_sign);
+            final_drive_clearance(side_sign);
+            gearbox_saddle_mount_holes(side_sign);
+        }
     }
 }
 
@@ -1385,65 +1448,194 @@ module bulkhead_joiner_plate() {
     }
 }
 
-module motor_plate() {
-    plate = 86;
-    difference() {
-        rounded_box([plate, 6, plate], 5, true);
-        cyl_y(10, 10, true);
-        bolt_circle_y(25, 3.6, 4, 10, 45);
-        bolt_circle_y(30, 3.6, 4, 10, 0);
-
-        // Four M4 plate mounting holes
-        for (x=[-34,34])
-            for (z=[-34,34])
-                translate([x,0,z]) cyl_y(10,2.2,true);
-    }
-}
-
-module gearbox_plate() {
-    // Generic side plate for a future reduction gearbox. Three shaft centres are
-    // deliberately slotted so reduction geometry can be changed without
-    // reprinting the entire rail.
-    plate_x = 150;
-    plate_z = 100;
-    difference() {
-        rounded_box([plate_x,6,plate_z],5,true);
-
-        // Output bearing / sprocket shaft
-        translate([55,0,18]) cyl_y(10,bearing_od/2,true);
-
-        // Intermediate shaft slot
-        hull() {
-            translate([5,0,-12]) cyl_y(10,5.2,true);
-            translate([25,0,-12]) cyl_y(10,5.2,true);
-        }
-
-        // Motor shaft / nose clearance slot
-        hull() {
-            translate([-55,0,-25]) cyl_y(10,10,true);
-            translate([-35,0,-25]) cyl_y(10,10,true);
-        }
-
-        for (x=[-62,62])
-            for (z=[-38,38])
-                translate([x,0,z]) cyl_y(10,2.2,true);
-    }
-}
-
-module motor_placeholder() {
-    color(colour_motor)
-        cyl_y(motor_length, motor_d/2, true);
-    color(colour_steel)
-        cyl_y(motor_length+18, motor_shaft_d/2, true);
-}
-
-module motor_pair(show_shafts=true) {
-    for (side_sign = [-1,1])
-        translate([motor_x,side_sign*motor_y,motor_z])
-            if (show_shafts)
-                motor_placeholder();
+module place_gearbox(side_sign=1, clearance=false, show_motor=true) {
+    translate([
+        -wheelbase/2,
+        side_sign*gearbox_front_face_y,
+        gearbox_output_z
+    ])
+        rotate([side_sign*90,0,180])
+            if (clearance)
+                gearbox_clearance_output_origin(
+                    side_sign < 0,
+                    gearbox_body_clearance,
+                    side_sign < 0
+                );
             else
-                cyl_y(motor_length, motor_d/2, true);
+                gearbox_drive_unit_output_origin(
+                    side_sign < 0,
+                    show_motor,
+                    side_sign < 0
+                );
+}
+
+module gearbox_body_clearance(side_sign=1) {
+    place_gearbox(side_sign, true, true);
+}
+
+module drive_axle(side_sign=1) {
+    track_centre_y = chassis_width/2 + track_gap + track_width/2;
+    // The axle begins at the inner face of its final-drive gear and runs only
+    // outward through the rail bearing and rear cog. It never enters the
+    // gearbox housing.
+    inner_y = final_drive_y-final_drive_width/2;
+    outer_y =
+        track_centre_y + sprocket_width/2 + drive_shaft_outer_overhang;
+
+    color(colour_fastener)
+        translate([
+            -wheelbase/2,
+            side_sign*(inner_y+outer_y)/2,
+            axle_z
+        ]) cyl_y(outer_y-inner_y, drive_shaft_d/2, true);
+}
+
+module drive_rail_bearing(side_sign=1) {
+    translate([
+        -wheelbase/2,
+        side_sign*chassis_width/2,
+        axle_z
+    ]) bearing_608_reference();
+}
+
+module final_drive_gears(side_sign=1) {
+    gear_y = side_sign*final_drive_y;
+
+    color(colour_final_drive) {
+        translate([-wheelbase/2,gear_y,gearbox_output_z])
+            rotate([side_sign*90,0,0])
+                final_drive_pinion();
+
+        translate([-wheelbase/2,gear_y,axle_z])
+            rotate([side_sign*90,0,0])
+                final_drive_axle_gear();
+    }
+}
+
+module final_drive_clearance(side_sign=1, clearance=1.5) {
+    gear_y = side_sign*final_drive_y;
+
+    for (gear=[
+        [gearbox_output_z, final_drive_pinion_outer_radius()],
+        [axle_z, final_drive_axle_outer_radius()]
+    ])
+        translate([-wheelbase/2,gear_y,gear[0]])
+            cyl_y(
+                final_drive_width+2*clearance,
+                gear[1]+clearance,
+                true
+            );
+}
+
+module gearbox_saddle_mount_holes_at(side_sign=1, saddle_x=-210) {
+    cleat_y = [
+        side_sign*(
+            gearbox_front_face_y
+            - gearbox_saddle_plate_clearance
+            - gearbox_saddle_y_length/2
+        ),
+        side_sign*(
+            gearbox_front_face_y
+            + gearbox_axial_width
+            + gearbox_saddle_plate_clearance
+            + gearbox_saddle_y_length/2
+        )
+    ];
+
+    for (x=[saddle_x-9, saddle_x+9])
+        for (y=cleat_y)
+            translate([x,y,floor_z])
+                cylinder(
+                    d=gearbox_saddle_bolt_d,
+                    h=floor_thickness+4,
+                    center=true
+                );
+}
+
+module gearbox_saddle_mount_holes(side_sign=1) {
+    for (saddle_x=gearbox_saddle_x)
+        gearbox_saddle_mount_holes_at(side_sign, saddle_x);
+}
+
+module gearbox_floor_cleat(saddle_x=-210, cleat_y=0) {
+    difference() {
+        color(colour_mount)
+            translate([
+                saddle_x,
+                cleat_y,
+                floor_z + floor_thickness/2 + gearbox_saddle_height/2
+            ]) cube([
+                gearbox_saddle_x_length,
+                gearbox_saddle_y_length,
+                gearbox_saddle_height
+            ], center=true);
+
+        for (x=[saddle_x-9, saddle_x+9])
+            translate([x,cleat_y,floor_z])
+                cylinder(
+                    d=gearbox_saddle_bolt_d,
+                    h=floor_thickness+2*gearbox_saddle_height+4,
+                    center=true
+                );
+    }
+}
+
+module gearbox_floor_saddle(side_sign=1, saddle_x=-210) {
+    cleat_y = [
+        side_sign*(
+            gearbox_front_face_y
+            - gearbox_saddle_plate_clearance
+            - gearbox_saddle_y_length/2
+        ),
+        side_sign*(
+            gearbox_front_face_y
+            + gearbox_axial_width
+            + gearbox_saddle_plate_clearance
+            + gearbox_saddle_y_length/2
+        )
+    ];
+
+    for (y=cleat_y)
+        gearbox_floor_cleat(saddle_x, y);
+}
+
+module print_oriented_gearbox_saddle() {
+    translate([0,0,-(floor_z+floor_thickness/2)])
+        gearbox_floor_cleat(0, 0);
+}
+
+module gearbox_floor_saddles(side_sign=1) {
+    for (saddle_x=gearbox_saddle_x)
+        gearbox_floor_saddle(side_sign, saddle_x);
+}
+
+module drive_mount_fasteners(side_sign=1) {
+    color(colour_fastener)
+        translate([
+            -wheelbase/2,
+            side_sign*(chassis_width/2-rail_thickness/4),
+            axle_z
+        ]) bolt_circle_y(
+            drive_mount_bcd,
+            4,
+            4,
+            rail_thickness + 5,
+            45
+        );
+}
+
+module drive_unit_side(side_sign=1, show_motor=true) {
+    place_gearbox(side_sign, false, show_motor);
+    drive_axle(side_sign);
+    drive_rail_bearing(side_sign);
+    drive_mount_fasteners(side_sign);
+    final_drive_gears(side_sign);
+    gearbox_floor_saddles(side_sign);
+}
+
+module drive_unit_pair(show_motor=true) {
+    drive_unit_side(1, show_motor);
+    drive_unit_side(-1, show_motor);
 }
 
 module body_joiner_set(include_fasteners=true) {
@@ -1561,11 +1753,8 @@ module assembly() {
     running_gear_side( track_centre_y + explode_y,  1);
     running_gear_side(-track_centre_y - explode_y, -1);
 
-    if (show_motor_placeholders) {
-        // Placeholder only: each motor now occupies its real rear-module
-        // envelope. The offset to the driven cog is reserved for reduction.
-        motor_pair();
-    }
+    if (show_drive_units)
+        drive_unit_pair(true);
 }
 
 module drive_collision() {
@@ -1723,9 +1912,12 @@ module body_module_collision(pair=body_collision_pair) {
         }
 }
 
-module motor_body_collision() {
+module drivetrain_body_collision() {
     intersection() {
-        motor_pair(false);
+        union() {
+            place_gearbox(1, false, true);
+            place_gearbox(-1, false, true);
+        }
         union() {
             body_module(true, 1);
             body_module(true, -1);
@@ -1733,6 +1925,64 @@ module motor_body_collision() {
             body_module(false, -1);
         }
     }
+}
+
+module drivetrain_pair_collision() {
+    intersection() {
+        place_gearbox(1, false, true);
+        place_gearbox(-1, false, true);
+    }
+}
+
+module final_drive_body_collision() {
+    intersection() {
+        union() {
+            final_drive_gears(1);
+            final_drive_gears(-1);
+        }
+        union() {
+            body_module(true, 1);
+            body_module(true, -1);
+            body_module(false, 1);
+            body_module(false, -1);
+        }
+    }
+}
+
+module final_drive_mesh_collision() {
+    union()
+        for (side_sign=[-1,1])
+            intersection() {
+                translate([
+                    -wheelbase/2,
+                    side_sign*final_drive_y,
+                    gearbox_output_z
+                ]) rotate([side_sign*90,0,0])
+                    final_drive_pinion();
+                translate([
+                    -wheelbase/2,
+                    side_sign*final_drive_y,
+                    axle_z
+                ]) rotate([side_sign*90,0,0])
+                    final_drive_axle_gear();
+            }
+}
+
+module drive_axle_gearbox_collision() {
+    union()
+        for (side_sign=[-1,1])
+            intersection() {
+                drive_axle(side_sign);
+                place_gearbox(side_sign, false, true);
+            }
+}
+
+module gearbox_standoff_collision() {
+    housing_standoff_gear_collision();
+}
+
+module gearbox_shaft_collision() {
+    shaft_other_gear_collision();
 }
 
 module dimensions() {
@@ -1753,8 +2003,29 @@ module dimensions() {
     echo("overall_width_mm", overall_width);
     echo("chassis_width_mm", chassis_width);
     echo("track_width_mm", track_width);
-    echo("rear_motor_axis_mm", [motor_x, motor_y, motor_z]);
-    echo("motor_to_drive_axis_offset_xz_mm", motor_to_drive_offset);
+    echo("gearbox_internal_ratio", gearbox_internal_ratio());
+    echo("final_drive_ratio", final_drive_ratio());
+    echo("overall_drive_ratio", combined_drive_ratio());
+    echo("gearbox_axial_width_mm", gearbox_axial_width);
+    echo("gearbox_motor_envelope_mm", [gearbox_motor_d, gearbox_motor_length]);
+    echo("gearbox_motor_axial_overlap_mm", gearbox_motor_axial_overlap);
+    echo(
+        "gearbox_motor_axis_separation_mm",
+        motor_layout_axis_separation()
+    );
+    echo(
+        "gearbox_motor_radial_clearance_mm",
+        motor_layout_radial_clearance()
+    );
+    echo("gearbox_plate_bottom_z_mm", gearbox_plate_bottom_z);
+    echo("gearbox_plate_floor_gap_mm", gearbox_floor_gap);
+    echo("gearbox_output_axis_mm", [-wheelbase/2, gearbox_output_z]);
+    echo("final_drive_centre_distance_mm", gearbox_output_z-axle_z);
+    echo("drive_mount_bolt_pattern_mm", [
+        drive_mount_bcd,
+        drive_mount_bolt_d
+    ]);
+    echo("drive_axle_d_mm", drive_shaft_d);
     echo("running_gear_drop_mm", running_gear_drop);
     echo("wheelbase_mm", wheelbase);
     echo("approx_overall_length_mm", wheelbase + 2*track_path_radius + track_pitch);
@@ -1918,9 +2189,20 @@ else if (part == "rail_rear") color(colour_frame) rail_half(false);
 else if (part == "crossmember") color(colour_frame) crossmember();
 else if (part == "floor_front") color(colour_frame) floor_half(true);
 else if (part == "floor_rear") color(colour_frame) floor_half(false);
-else if (part == "motor_pair") motor_pair();
-else if (part == "motor_plate") color(colour_mount) motor_plate();
-else if (part == "gearbox_plate") color(colour_mount) gearbox_plate();
+else if (part == "drive_unit_left") drive_unit_side(1, true);
+else if (part == "drive_unit_right") drive_unit_side(-1, true);
+else if (part == "drive_unit_pair") drive_unit_pair(true);
+else if (part == "motor_540") motor_540_reference();
+else if (part == "final_drive_gears") final_drive_gears(1);
+else if (part == "final_drive_pinion") final_drive_pinion();
+else if (part == "final_drive_axle_gear") final_drive_axle_gear();
+else if (part == "gearbox_saddle") print_oriented_gearbox_saddle();
+else if (part == "gearbox_front_plate_left") front_plate(false);
+else if (part == "gearbox_rear_plate_left") rear_plate(false);
+else if (part == "gearbox_front_plate_right")
+    mirror([0,1,0]) front_plate(true);
+else if (part == "gearbox_rear_plate_right")
+    mirror([0,1,0]) rear_plate(true);
 else if (part == "drive_collision") drive_collision();
 else if (part == "front_cog_collision") front_cog_collision();
 else if (part == "front_cog_hardware_collision")
@@ -1931,6 +2213,21 @@ else if (part == "suspension_clearance_collision")
 else if (part == "spring_pivot_clearance_collision")
     spring_pivot_clearance_collision();
 else if (part == "body_module_collision") body_module_collision();
-else if (part == "motor_body_collision") motor_body_collision();
+else if (part == "drivetrain_body_collision")
+    drivetrain_body_collision();
+else if (part == "drivetrain_pair_collision")
+    drivetrain_pair_collision();
+else if (part == "final_drive_body_collision")
+    final_drive_body_collision();
+else if (part == "final_drive_mesh_collision")
+    final_drive_mesh_collision();
+else if (part == "drive_axle_gearbox_collision")
+    drive_axle_gearbox_collision();
+else if (part == "internal_gear_collision")
+    internal_gear_collision();
+else if (part == "gearbox_standoff_collision")
+    gearbox_standoff_collision();
+else if (part == "gearbox_shaft_collision")
+    gearbox_shaft_collision();
 else if (part == "dimensions") dimensions();
 else assert(false, str("Unknown part selector: ", part));

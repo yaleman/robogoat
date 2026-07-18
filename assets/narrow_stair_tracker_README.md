@@ -197,7 +197,7 @@ The loop is generated from link-centre positions around the pitch circle. The
 reported adjacent-centre spacing is 30.000 to 30.077 mm; the small maximum
 variation occurs at a straight-to-wrap transition.
 
-Eight diagnostic selectors are available:
+Fifteen diagnostic selectors are available:
 
 - `drive_collision`: cog against the seven links around the rear drive wrap
 - `front_cog_collision`: bearing cog against the eight links around the front
@@ -213,9 +213,22 @@ Eight diagnostic selectors are available:
   and upper fork, excluding their intended pins
 - `body_module_collision`: all six pairings of the four structural body
   quadrants; the 0.3 mm seam clearances mean the expected result is empty
-- `motor_body_collision`: both motor cans against all four body modules
+- `drivetrain_body_collision`: both complete gearbox and motor units against
+  all four body modules
+- `drivetrain_pair_collision`: the staggered left and right gearbox/motor units
+  against each other
+- `final_drive_body_collision`: both external final-drive gear pairs against all
+  four body modules
+- `final_drive_mesh_collision`: the 20:48 final-drive tooth meshes on both sides
+- `drive_axle_gearbox_collision`: each rear cog axle against its complete
+  gearbox, including every internal gear and housing component
+- `internal_gear_collision`: all four internal meshes in both gearbox layouts
+- `gearbox_standoff_collision`: every housing standoff against every internal
+  gear in both gearbox layouts
+- `gearbox_shaft_collision`: every 8 mm shaft against the gears carried by the
+  other axes in both gearbox layouts
 
-All eight are expected to render as an empty object. A non-empty result means
+All fifteen are expected to render as an empty object. A non-empty result means
 that one of the checked components has solid interference beyond the documented
 tangent allowance.
 
@@ -230,9 +243,13 @@ The default parts are checked against the shared printer envelope:
 - Crossmember: 214 x 28 mm
 - Rear and front cogs: under 120 mm diameter
 - Track link: 40 x 55 mm including hinge barrels
+- Left gearbox plate: approximately 238.9 x 136.3 mm
+- Right gearbox plate: approximately 227.2 x 136.3 mm
+- Gearbox floor cleat: 28 x 8 mm; print four per gearbox
 
-The body selectors are already print-oriented. Reorient the legacy rail,
-gearbox, and motor plate selectors flat before slicing.
+The body and gearbox-plate selectors are already print-oriented. The legacy
+`gearbox_saddle` selector exports one gearbox floor cleat base-down; print four
+per gearbox, or eight for the complete vehicle.
 
 ## Exporting parts
 
@@ -267,14 +284,23 @@ Available values:
 - `floor_joiner_longitudinal`
 - `floor_joiner_transverse`
 - `bulkhead_joiner_plate`
-- `motor_pair`
+- `drive_unit_left`
+- `drive_unit_right`
+- `drive_unit_pair`
+- `motor_540`
+- `final_drive_gears`
+- `final_drive_pinion`
+- `final_drive_axle_gear`
+- `gearbox_saddle`
+- `gearbox_front_plate_left`
+- `gearbox_rear_plate_left`
+- `gearbox_front_plate_right`
+- `gearbox_rear_plate_right`
 - `rail_front`
 - `rail_rear`
 - `crossmember`
 - `floor_front`
 - `floor_rear`
-- `motor_plate`
-- `gearbox_plate`
 - `drive_collision`
 - `front_cog_collision`
 - `front_cog_hardware_collision`
@@ -282,7 +308,14 @@ Available values:
 - `suspension_clearance_collision`
 - `spring_pivot_clearance_collision`
 - `body_module_collision`
-- `motor_body_collision`
+- `drivetrain_body_collision`
+- `drivetrain_pair_collision`
+- `final_drive_body_collision`
+- `final_drive_mesh_collision`
+- `drive_axle_gearbox_collision`
+- `internal_gear_collision`
+- `gearbox_standoff_collision`
+- `gearbox_shaft_collision`
 - `dimensions`
 
 Render with F6, then export the selected part as STL.
@@ -318,12 +351,22 @@ Do these before printing a complete set:
    pivot lug, and layer lines for cracking or permanent movement.
 11. Weigh the completed robot and calculate the spring rate, preload, damping,
     bump stop, and maximum arm angle before powered stair testing.
-12. Print the four body modules and all six splice plates in inexpensive
+12. Print the four body modules and all five splice plates in inexpensive
     material first. Dry-fit the 0.3 mm seams, install every M4 fastener, and
     confirm the body sits square without forcing the rail laps together.
 13. Load the assembled body across opposite corners and inspect the rail laps,
     floor plates, bulkhead plates, and layer lines for movement before mounting
     the drivetrain or batteries.
+14. Print one 18-tooth and one mating large gear, tune backlash, then build one
+    gearbox completely before producing the second side.
+15. Verify the actual 540 pilot, M3 hole spacing, shaft projection, terminal
+    clearance, and wire bend radius against both staggered motor locations.
+16. Seat both gearbox plates directly on the 50 mm baseplate datum, install the
+    four locating cleats, and confirm the housing is square against the open
+    rear floor structure.
+17. Print one module 0.8, 20:48 final-drive pair and tune its 27.4 mm mesh before
+    making the second side. Hand-turn the complete 96:1 drivetrain and track
+    before applying motor power.
 
 ## Materials
 
@@ -348,23 +391,62 @@ A sensible first build would use:
 
 ## Drivetrain status
 
-The model includes a generic 42 mm brushless motor plate and gearbox side plate,
-but **does not contain a validated reduction gearbox**. A low-KV outrunner still
-needs substantial reduction for controlled stair climbing. Treat the motor and
-gearbox geometry as an interface placeholder, not a finished transmission.
+The chassis now integrates two four-stage 40:1 herringbone gearboxes from
+`parametric_herringbone_gearbox.scad` and the supplied 540 motor envelope. Each
+side uses 18:54, 18:72, 18:72, and 48:40 internal stages with 1.25 module,
+9 mm-wide gears. A module 0.8, 20:48 external pair raises the installed total
+to 96:1. The angled output stage gives the 8 mm output shaft 4.95 mm modelled
+clearance from the preceding 72-tooth gear. The 49.4 mm gearbox stack plus
+50 mm motor fits inside each half
+of the 204 mm rail-to-rail interior.
 
-The two 42 mm motor envelopes are positioned inside the rear body modules,
-immediately inboard of the side rails. Each motor clears the rear transverse
-bulkhead by 2 mm, the floor by 3 mm, and the inner rail face by 2 mm. Its shaft
-axis is 18 mm forward and 17 mm above the rear driven-cog axis, leaving a compact
-parallel-shaft reduction envelope without placing the motor through the floor or
-the new body joint.
+The gearbox layouts intentionally differ. The left primary and right alternate
+plates put their motor axes at different longitudinal and vertical positions,
+leaving usable space around the inward-facing motor ends for terminals and wire
+bends. The gears, bearings, spacers, and shafts remain common; only the plate
+hole layouts differ. Their axes are approximately 45.2 mm apart in the X/Z
+plane, giving about 9.4 mm radial clearance between the 35.8 mm cans. Moving the
+gearboxes inward creates 8.8 mm of axial overlap in the motor envelopes, but the
+radial offset keeps the cans disjoint; verify the real terminal and wire-bend
+envelopes before printing both plates.
 
-For the next iteration, choose the actual motor, battery voltage, desired track
-speed, and reduction method first. Those determine shaft spacing, gearbox size,
-and whether the rear sprocket axle can remain where it is.
+Keep the battery and payload low, then check static tip margin and stair
+transition stability with the finished vehicle mass before powered testing.
+
+Both plate bottoms sit at z = 50.15 mm, leaving a 0.15 mm assembly allowance
+above the baseplate top. Two paired stations of bolted locating cleats restrain
+the front and rear plate outer faces on each side. Removing the rear transverse
+bulkhead lets the gearbox output sit at z = 84.4 mm. The 20-tooth output pinion
+drives the 48-tooth gear on the z = 57 mm rear cog axle over a 27.4 mm centre
+distance. The cog axle runs
+through the existing rail 608 bearing, so track tension does not reach the
+gearbox output bearings. Both final-drive gears now sit in a dedicated 6 mm bay
+between the gearbox rear plate and rail. The cog axle begins at the inner face
+of its gear and runs only outward, so it never crosses the internal gear stack.
+
+The existing rear cog still has its original 8.2 mm round bore. Its final keyed,
+clamped, or pinned interface to the 8 mm drive axle remains a separate decision,
+so this revision does not invalidate an already printed cog.
 
 ## Changes in this revision
+
+- Integrated mirrored primary and alternate 40:1 herringbone gearbox layouts
+  with dimensioned 540 motor references.
+- Removed the rear transverse bulkhead and its joiner hardware.
+- Positioned both gearbox outputs at z = 84.4 mm with the plate bottoms 0.15 mm
+  above the z = 50 mm baseplate datum.
+- Replaced the belt and jackshaft arrangement with a module 0.8, 20:48 geared
+  final drive on the rear cog axle.
+- Added calculated internal gear phases plus Boolean mesh-collision selectors.
+- Replaced the impossible 30:30 output stage with a wide, angled 48:40 mesh,
+  moved two housing standoffs out of the gear envelopes, and added explicit
+  shaft-to-other-gear and standoff-to-gear collision selectors.
+- Relocated the final-drive pair outside the gearbox rear plate and added a
+  dedicated axle-to-gearbox collision fixture.
+- Added two pairs of bolted gearbox floor cleats per side plus matching body
+  mounting holes.
+- Staggered the two motor locations to provide wiring and terminal access while
+  retaining common gears, bearings, shafts, and spacers.
 
 - Replaced the disconnected original link geometry with the printable pinned
   link from `track_links.scad`.

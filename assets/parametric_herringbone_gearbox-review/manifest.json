@@ -1,0 +1,114 @@
+{
+  "model": "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox.scad",
+  "model_sha256": "82f5934fc3542e74c8cac196a90f30678f389fd921bad63cec38fb839b719a65",
+  "openscad": "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
+  "size": [
+    1600,
+    1200
+  ],
+  "projection": "orthographic",
+  "mode": "render",
+  "defines": [],
+  "results": [
+    {
+      "view": "top",
+      "image": "top.png",
+      "command": [
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,0,0,0,100",
+        "--imgsize=1600,1200",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox-review/top.png",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox.scad"
+      ],
+      "return_code": 0,
+      "output": "ECHO: stage_ratios = [3, 4, 4, 0.833333]\nECHO: total_ratio = 40\nECHO: inner_gap = 39.4, gearbox_total_width = 49.4\nECHO: plate_size = [238.91, 136.305]\nECHO: alternate_plate_size = [227.211, 136.305]\nECHO: motor_540_envelope_mm = [35.8, 50]\nECHO: motor_layout_axis_separation_mm = 45.2\nECHO: motor_layout_radial_clearance_mm = 9.4\nECHO: output_to_plate_bottom_mm = 34.25\nECHO: final_drive_ratio = 2.4\nECHO: combined_drive_ratio = 96\nECHO: final_drive_centre_distance_mm = 27.4\nGeometries in cache: 418\nGeometry cache size in bytes: 7111656\nCGAL Polyhedrons in cache: 80\nCGAL cache size in bytes: 104345500\nTotal rendering time: 0:00:00.823\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      -150\n   Vertices:    78666\n   Facets:     156728"
+    },
+    {
+      "view": "left",
+      "image": "left.png",
+      "command": [
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,90,0,0,100",
+        "--imgsize=1600,1200",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox-review/left.png",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox.scad"
+      ],
+      "return_code": 0,
+      "output": "ECHO: stage_ratios = [3, 4, 4, 0.833333]\nECHO: total_ratio = 40\nECHO: inner_gap = 39.4, gearbox_total_width = 49.4\nECHO: plate_size = [238.91, 136.305]\nECHO: alternate_plate_size = [227.211, 136.305]\nECHO: motor_540_envelope_mm = [35.8, 50]\nECHO: motor_layout_axis_separation_mm = 45.2\nECHO: motor_layout_radial_clearance_mm = 9.4\nECHO: output_to_plate_bottom_mm = 34.25\nECHO: final_drive_ratio = 2.4\nECHO: combined_drive_ratio = 96\nECHO: final_drive_centre_distance_mm = 27.4\nGeometries in cache: 418\nGeometry cache size in bytes: 7111656\nCGAL Polyhedrons in cache: 80\nCGAL cache size in bytes: 104345500\nTotal rendering time: 0:00:00.829\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      -150\n   Vertices:    78666\n   Facets:     156728"
+    },
+    {
+      "view": "bottom",
+      "image": "bottom.png",
+      "command": [
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,180,0,0,100",
+        "--imgsize=1600,1200",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox-review/bottom.png",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox.scad"
+      ],
+      "return_code": 0,
+      "output": "ECHO: stage_ratios = [3, 4, 4, 0.833333]\nECHO: total_ratio = 40\nECHO: inner_gap = 39.4, gearbox_total_width = 49.4\nECHO: plate_size = [238.91, 136.305]\nECHO: alternate_plate_size = [227.211, 136.305]\nECHO: motor_540_envelope_mm = [35.8, 50]\nECHO: motor_layout_axis_separation_mm = 45.2\nECHO: motor_layout_radial_clearance_mm = 9.4\nECHO: output_to_plate_bottom_mm = 34.25\nECHO: final_drive_ratio = 2.4\nECHO: combined_drive_ratio = 96\nECHO: final_drive_centre_distance_mm = 27.4\nGeometries in cache: 418\nGeometry cache size in bytes: 7111656\nCGAL Polyhedrons in cache: 80\nCGAL cache size in bytes: 104345500\nTotal rendering time: 0:00:00.818\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      -150\n   Vertices:    78666\n   Facets:     156728"
+    },
+    {
+      "view": "right",
+      "image": "right.png",
+      "command": [
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,90,0,180,100",
+        "--imgsize=1600,1200",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox-review/right.png",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox.scad"
+      ],
+      "return_code": 0,
+      "output": "ECHO: stage_ratios = [3, 4, 4, 0.833333]\nECHO: total_ratio = 40\nECHO: inner_gap = 39.4, gearbox_total_width = 49.4\nECHO: plate_size = [238.91, 136.305]\nECHO: alternate_plate_size = [227.211, 136.305]\nECHO: motor_540_envelope_mm = [35.8, 50]\nECHO: motor_layout_axis_separation_mm = 45.2\nECHO: motor_layout_radial_clearance_mm = 9.4\nECHO: output_to_plate_bottom_mm = 34.25\nECHO: final_drive_ratio = 2.4\nECHO: combined_drive_ratio = 96\nECHO: final_drive_centre_distance_mm = 27.4\nGeometries in cache: 418\nGeometry cache size in bytes: 7111656\nCGAL Polyhedrons in cache: 80\nCGAL cache size in bytes: 104345500\nTotal rendering time: 0:00:00.847\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      -150\n   Vertices:    78666\n   Facets:     156728"
+    },
+    {
+      "view": "isometric",
+      "image": "isometric.png",
+      "command": [
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
+        "--autocenter",
+        "--viewall",
+        "--projection=ortho",
+        "--camera=0,0,0,55,0,25,100",
+        "--imgsize=1600,1200",
+        "--colorscheme=Tomorrow",
+        "--view=edges",
+        "--render=true",
+        "-o",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox-review/isometric.png",
+        "/Users/yaleman/Projects/robogoat/assets/parametric_herringbone_gearbox.scad"
+      ],
+      "return_code": 0,
+      "output": "ECHO: stage_ratios = [3, 4, 4, 0.833333]\nECHO: total_ratio = 40\nECHO: inner_gap = 39.4, gearbox_total_width = 49.4\nECHO: plate_size = [238.91, 136.305]\nECHO: alternate_plate_size = [227.211, 136.305]\nECHO: motor_540_envelope_mm = [35.8, 50]\nECHO: motor_layout_axis_separation_mm = 45.2\nECHO: motor_layout_radial_clearance_mm = 9.4\nECHO: output_to_plate_bottom_mm = 34.25\nECHO: final_drive_ratio = 2.4\nECHO: combined_drive_ratio = 96\nECHO: final_drive_centre_distance_mm = 27.4\nGeometries in cache: 418\nGeometry cache size in bytes: 7111656\nCGAL Polyhedrons in cache: 80\nCGAL cache size in bytes: 104345500\nTotal rendering time: 0:00:00.845\n   Top level object is a 3D object (manifold):\n   Status:     NoError\n   Genus:      -150\n   Vertices:    78666\n   Facets:     156728"
+    }
+  ]
+}
