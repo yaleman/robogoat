@@ -106,12 +106,28 @@ def render_view(
         text=True,
         check=False,
     )
+    output = completed.stdout.strip()
+    if completed.returncode != 0 and any(
+        marker in output.lower()
+        for marker in (
+            "incompatible processor",
+            "requires neon",
+            "could not load",
+            "library not loaded",
+        )
+    ):
+        output += (
+            "\n\nThis looks like a native OpenSCAD/runtime failure. "
+            "Rerun the renderer with the command tool's "
+            "sandbox_permissions=require_escalated; do not treat a restricted "
+            "sandbox result as a model parse failure."
+        )
     return RenderResult(
         view=view.label,
         image=image_path.name,
         command=command,
         return_code=completed.returncode,
-        output=completed.stdout.strip(),
+        output=output,
     )
 
 

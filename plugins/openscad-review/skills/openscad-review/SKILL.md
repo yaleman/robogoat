@@ -9,11 +9,31 @@ Render the model with the bundled script, inspect every view, and report concret
 
 ## Render
 
-Run from the user's workspace so relative `use` and `include` paths behave normally:
+OpenSCAD is a native GUI/runtime application and can fail inside the restricted
+Codex command sandbox before it parses the model. In particular, Qt/CPU-loader
+errors from a sandboxed invocation are not evidence that the user's OpenSCAD
+installation or `.scad` file is broken.
+
+Always run the renderer in the host environment with command escalation. Do
+not run an initial non-escalated render and treat its failure as authoritative.
+The command must use `sandbox_permissions: "require_escalated"` and run from the
+user's workspace so relative `use` and `include` paths behave normally:
 
 ```bash
 python3 <skill-dir>/scripts/render_views.py path/to/model.scad
 ```
+
+When invoking this through the command tool, the invocation must be equivalent
+to:
+
+```text
+sandbox_permissions: require_escalated
+cmd: python3 <skill-dir>/scripts/render_views.py path/to/model.scad
+```
+
+If an unavoidably non-escalated invocation has already failed, rerun the exact
+same command escalated before diagnosing syntax, geometry, or OpenSCAD-loader
+problems. Report the two classes of failure separately.
 
 The default output directory is `<model-stem>-review` beside the model. The script writes `top.png`, `left.png`, `bottom.png`, `right.png`, `isometric.png`, a labelled `index.html`, and a `manifest.json` containing the render settings and OpenSCAD output.
 
@@ -33,7 +53,7 @@ python3 <skill-dir>/scripts/render_views.py model.scad \
 
 Use full rendering for the final review. Preview mode uses OpenCSG and can show false black faces or other backside artifacts on otherwise valid geometry.
 
-Do not install OpenSCAD silently. If neither `openscad` nor the standard macOS application executable exists, report that OpenSCAD is required and ask before installing it.
+Do not install OpenSCAD silently. If neither `openscad` nor the standard macOS application executable exists in the escalated host environment, report that OpenSCAD is required and ask before installing it.
 
 ## Inspect
 
